@@ -145,4 +145,5 @@ func githubTask(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 	}
+	cacheClear(c, "/")
 }

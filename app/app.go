@@ -3,7 +3,6 @@ package app
 import (
 	"appengine"
 	"appengine/datastore"
-	"bytes"
 	"go/doc"
 	"http"
 	"io"
@@ -44,14 +43,6 @@ func servePkg(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.FormValue("format") == "json" {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		var buf bytes.Buffer
-		json.Indent(&buf, doc.Data, "", "  ")
-		w.Write(buf.Bytes())
-		return
-	}
-
 	var m map[string]interface{}
 	if err := json.Unmarshal(doc.Data, &m); err != nil {
 		c.Logf("error unmarshalling json", err)
@@ -73,13 +64,20 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := appengine.NewContext(r)
-	q := datastore.NewQuery("PackageDoc").KeysOnly()
-	keys, err := q.GetAll(c, nil)
-	if err != nil {
-		internalError(w, c, err)
-		return
+	var imports []string
+	if item, found := cacheGet(c, "/", &imports); !found {
+		q := datastore.NewQuery("PackageDoc").KeysOnly()
+		keys, err := q.GetAll(c, nil)
+		if err != nil {
+			internalError(w, c, err)
+			return
+		}
+		for _, key := range keys {
+			imports = append(imports, key.StringID())
+		}
+		cacheSet(c, item, 7200, imports)
 	}
-	if err := homeTemplate.Execute(w, keys); err != nil {
+	if err := homeTemplate.Execute(w, imports); err != nil {
 		c.Logf("error rendering home template:", err)
 	}
 }
