@@ -66,6 +66,10 @@ func (r sliceReaderAt) ReadAt(p []byte, off int64) (int, os.Error) {
 }
 
 func githubHook(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" || r.Body == nil {
+		http.Redirect(w, r, "/#info", 302)
+		return
+	}
 	c := appengine.NewContext(r)
 	p, err := ioutil.ReadAll(r.Body)
 	if err != nil {
