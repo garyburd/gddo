@@ -40,7 +40,7 @@ var pkgTemplate = template.MustParseFile("template/pkg.html", template.Formatter
 })
 
 func internalError(w http.ResponseWriter, c appengine.Context, err os.Error) {
-	c.Logf("Error %s", err.String())
+	c.Errorf("Error %s", err.String())
 	http.Error(w, "Internal Error", http.StatusInternalServerError)
 }
 
@@ -59,7 +59,7 @@ func servePkg(w http.ResponseWriter, r *http.Request) {
 
 	var m map[string]interface{}
 	if err := json.Unmarshal(doc.Data, &m); err != nil {
-		c.Logf("error unmarshalling json", err)
+		c.Errorf("error unmarshalling json", err)
 	}
 
 	m["importPath"] = doc.ImportPath
@@ -68,7 +68,7 @@ func servePkg(w http.ResponseWriter, r *http.Request) {
 	m["projectName"] = doc.ProjectName
 	m["updated"] = time.SecondsToLocalTime(int64(doc.Updated) / 1e6).String()
 	if err := pkgTemplate.Execute(w, m); err != nil {
-		c.Logf("error rendering pkg template:", err)
+		c.Errorf("error rendering pkg template:", err)
 	}
 }
 
@@ -92,7 +92,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		cacheSet(c, item, 7200, imports)
 	}
 	if err := homeTemplate.Execute(w, imports); err != nil {
-		c.Logf("error rendering home template:", err)
+		c.Errorf("error rendering home template:", err)
 	}
 }
 

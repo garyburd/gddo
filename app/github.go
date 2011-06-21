@@ -73,16 +73,16 @@ func githubHook(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	p, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		c.Logf("error reading req body, %v", err)
+		c.Warningf("error reading req body, %v", err)
 		return
 	}
 	m, err := http.ParseQuery(string(p))
 	if err != nil {
-		c.Logf("error parsing query, %v", err)
+		c.Warningf("error parsing query, %v", err)
 		return
 	}
 	if len(m["payload"]) == 0 {
-		c.Logf("payload missing")
+		c.Warningf("payload missing")
 		return
 	}
 	var n struct {
@@ -93,16 +93,16 @@ func githubHook(w http.ResponseWriter, r *http.Request) {
 	}
 	err = json.Unmarshal([]byte(m["payload"][0]), &n)
 	if err != nil {
-		c.Logf("error decoding hook, %v", err)
+		c.Warningf("error decoding hook, %v", err)
 		return
 	}
 	if n.Ref != "refs/heads/master" {
-		c.Logf("ignoring ref %s", n.Ref)
+		c.Infof("ignoring ref %s", n.Ref)
 		return
 	}
 	url, err := http.ParseURL(n.Repository.Url)
 	if err != nil {
-		c.Logf("error parsing url %s, %v", n.Repository.Url, err)
+		c.Errorf("error parsing url %s, %v", n.Repository.Url, err)
 		return
 	}
 	taskqueue.Add(
@@ -118,12 +118,12 @@ func githubTask(w http.ResponseWriter, r *http.Request) {
 	url := "http://github.com/" + userRepo + "/zipball/master"
 	p, err := httpGet(client, "http://github.com/"+userRepo+"/zipball/master")
 	if err != nil {
-		c.Logf("failed to fetch %s, %v", url, err)
+		c.Errorf("failed to fetch %s, %v", url, err)
 		return
 	}
 	zr, err := zip.NewReader(sliceReaderAt(p), int64(len(p)))
 	if err != nil {
-		c.Logf("failed to open zip for %s, %v", userRepo, err)
+		c.Errorf("failed to open zip for %s, %v", userRepo, err)
 		return
 	}
 	pkgs := make(map[string][]file)
@@ -153,13 +153,13 @@ func githubTask(w http.ResponseWriter, r *http.Request) {
 		doc, err := createPackageDoc(importpath, fileURLFmt, srcURLFmt, projectURL, projectName, files)
 		if err != nil {
 			if err != errPackageNotFound {
-				c.Logf("failure generating json for %s, %v", importpath, err)
+				c.Errorf("failure generating json for %s, %v", importpath, err)
 			}
 			continue
 		}
 		_, err = datastore.Put(c, datastore.NewKey("PackageDoc", importpath, 0, nil), doc)
 		if err != nil {
-			c.Logf("failure puting doc %s, %v", importpath, err)
+			c.Errorf("failure puting doc %s, %v", importpath, err)
 			continue
 		}
 	}
