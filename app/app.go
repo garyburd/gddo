@@ -18,6 +18,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"go/doc"
+	"path"
 	"http"
 	"io"
 	"json"
@@ -74,6 +75,9 @@ func servePkg(w http.ResponseWriter, r *http.Request) {
 		c.Errorf("error unmarshalling json", err)
 	}
 
+	userURL, _ := path.Split(doc.ProjectURL)
+	m["userURL"] = userURL
+	m["userName"] = path.Base(userURL)
 	m["importPath"] = doc.ImportPath
 	m["packageName"] = doc.PackageName
 	m["projectURL"] = doc.ProjectURL

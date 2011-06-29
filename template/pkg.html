@@ -2,13 +2,20 @@
 <html>
 <head>
 <title>{projectName}: {packageName}</title>
-<link rel="stylesheet" href="/static/base.css" type="text/css"/> 
+<link rel="stylesheet" href="/static/base.css?v=1" type="text/css"/> 
 </head>
 <body>
-<div id="content"> 
-<h1><a href="{projectURL}">{projectName}</a>: package {packageName}</h1>
+<div id="header">
+    <div class="content">
+        <h1><a href="{userURL}">{userName}</a> / <strong><a href="{projectURL}">{projectName}</a></strong></h1>
+    </div>
+</div>
+
+<div class="content"> 
+<h1>package {packageName}</h1>
 
 <h4>Table Of Contents</h4>
+<div style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2">
 <ul>
 <li><a href="#package">Package</a>
 {.section consts}<li><a href="#constants">Constants</a>{.end}
@@ -22,6 +29,7 @@
     {.section factories}</ul>{.or}{.section methods}</ul>{.end}{.end}
 {.end}
 </ul>
+</div> 
 
 <h2 id="package">Package</h2>
 
@@ -66,8 +74,11 @@
     {.end}
 
 {.end}
-<hr>
+</div>
+<div id="footer">
+<div class="content">
 Generated on {updated} from the <a href="{projectURL}">{projectName} source code</a>.
+</div>
 </div>
 </body>
 </html>

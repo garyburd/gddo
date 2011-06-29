@@ -115,7 +115,7 @@ func githubTask(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	userRepo := r.FormValue("userRepo")
 	client := urlfetch.Client(c)
-	url := "http://github.com/" + userRepo + "/zipball/master"
+	url := "https://github.com/" + userRepo + "/zipball/master"
 	p, err := httpGet(client, "http://github.com/"+userRepo+"/zipball/master")
 	if err != nil {
 		c.Errorf("failed to fetch %s, %v", url, err)
