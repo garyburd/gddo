@@ -45,7 +45,7 @@ type file struct {
 
 func sprintNode(fset *token.FileSet, decl interface{}) string {
 	var buf bytes.Buffer
-	_, err := (&printer.Config{Mode: printer.UseSpaces}).Fprint(&buf, fset, decl)
+	_, err := (&printer.Config{Mode: printer.UseSpaces, Tabwidth: 4}).Fprint(&buf, fset, decl)
 	if err != nil {
 		buf.Reset()
 		buf.WriteString(err.String())
