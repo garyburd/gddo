@@ -26,15 +26,27 @@ import (
 	"time"
 )
 
+func parseTemplate(name string, fmap template.FormatterMap) func(io.Writer, interface{}) os.Error {
+	if appengine.IsDevAppServer() {
+		return func(w io.Writer, value interface{}) os.Error {
+			return template.MustParseFile(name, fmap).Execute(w, value)
+		}
+	}
+	t := template.MustParseFile(name, fmap)
+	return func(w io.Writer, value interface{}) os.Error {
+		return t.Execute(w, value)
+	}
+}
+
 func commentFmt(w io.Writer, format string, x ...interface{}) {
 	doc.ToHTML(w, []byte(x[0].(string)), nil)
 }
 
-var homeTemplate = template.MustParseFile("template/home.html", template.FormatterMap{
+var homeTemplate = parseTemplate("template/home.html", template.FormatterMap{
 	"": template.HTMLFormatter,
 })
 
-var pkgTemplate = template.MustParseFile("template/pkg.html", template.FormatterMap{
+var pkgTemplate = parseTemplate("template/pkg.html", template.FormatterMap{
 	"":        template.HTMLFormatter,
 	"comment": commentFmt,
 })
@@ -67,7 +79,7 @@ func servePkg(w http.ResponseWriter, r *http.Request) {
 	m["projectURL"] = doc.ProjectURL
 	m["projectName"] = doc.ProjectName
 	m["updated"] = time.SecondsToLocalTime(int64(doc.Updated) / 1e6).String()
-	if err := pkgTemplate.Execute(w, m); err != nil {
+	if err := pkgTemplate(w, m); err != nil {
 		c.Errorf("error rendering pkg template:", err)
 	}
 }
@@ -91,7 +103,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		}
 		cacheSet(c, item, 7200, imports)
 	}
-	if err := homeTemplate.Execute(w, imports); err != nil {
+	if err := homeTemplate(w, imports); err != nil {
 		c.Errorf("error rendering home template:", err)
 	}
 }
