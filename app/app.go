@@ -59,7 +59,12 @@ func internalError(w http.ResponseWriter, c appengine.Context, err os.Error) {
 
 func servePkg(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	key := datastore.NewKey("PackageDoc", r.URL.Path[len("/pkg/"):], 0, nil)
+	importPath := r.URL.Path[len("/pkg/"):]
+	if importPath == "" {
+		http.NotFound(w, r)
+		return
+	}
+	key := datastore.NewKey("PackageDoc", importPath, 0, nil)
 	var doc PackageDoc
 	err := datastore.Get(appengine.NewContext(r), key, &doc)
 	if err == datastore.ErrNoSuchEntity {

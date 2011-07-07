@@ -105,10 +105,8 @@ func githubHook(w http.ResponseWriter, r *http.Request) {
 		c.Errorf("error parsing url %s, %v", n.Repository.Url, err)
 		return
 	}
-	taskqueue.Add(
-		appengine.NewContext(r),
-		taskqueue.NewPOSTTask("/admin/task/github", map[string][]string{"userRepo": []string{url.Path[1:]}}),
-		"")
+	t := taskqueue.NewPOSTTask("/admin/task/github", map[string][]string{"userRepo": []string{url.Path[1:]}})
+	taskqueue.Add(appengine.NewContext(r), t, "")
 }
 
 func githubTask(w http.ResponseWriter, r *http.Request) {
@@ -119,6 +117,7 @@ func githubTask(w http.ResponseWriter, r *http.Request) {
 	p, err := httpGet(client, "http://github.com/"+userRepo+"/zipball/master")
 	if err != nil {
 		c.Errorf("failed to fetch %s, %v", url, err)
+		http.Error(w, err.String(), 500)
 		return
 	}
 	zr, err := zip.NewReader(sliceReaderAt(p), int64(len(p)))
