@@ -5,6 +5,10 @@ api_version: 1
 
 handlers:
 
+- url: /google3d2f3cd4cc2bb44b\.html
+  static_files: static/google3d2f3cd4cc2bb44b.html
+  upload: static/google3d2f3cd4cc2bb44b.html
+
 - url: /robots\.txt
   static_files: static/robots.txt
   upload: static/robots.txt
