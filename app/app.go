@@ -121,5 +121,4 @@ func init() {
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/pkg/", servePkg)
 	http.HandleFunc("/hook/github", githubHook)
-	http.HandleFunc("/admin/task/github", githubTask)
 }
