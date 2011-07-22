@@ -40,7 +40,7 @@ func init() {
 }
 
 func httpGet(client *http.Client, url string) ([]byte, os.Error) {
-	resp, _, err := client.Get(url)
+	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err
 	}
