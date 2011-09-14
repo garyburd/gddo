@@ -58,7 +58,7 @@ func sprintURL(fset *token.FileSet, srcURLFmt string, pos token.Pos) string {
 	return fmt.Sprintf(srcURLFmt, position.Filename, position.Line)
 }
 
-func valueDocs(fset *token.FileSet, srcURLFmt string, values []*doc.ValueDoc) interface{} {
+func valueDocs(fset *token.FileSet, srcURLFmt string, values []*doc.ValueDoc) []map[string]interface{} {
 	var result []map[string]interface{}
 	for _, d := range values {
 		result = append(result, map[string]interface{}{
@@ -70,7 +70,7 @@ func valueDocs(fset *token.FileSet, srcURLFmt string, values []*doc.ValueDoc) in
 	return result
 }
 
-func funcDocs(fset *token.FileSet, srcURLFmt string, funcs []*doc.FuncDoc) interface{} {
+func funcDocs(fset *token.FileSet, srcURLFmt string, funcs []*doc.FuncDoc) []map[string]interface{} {
 	var result []map[string]interface{}
 	for _, d := range funcs {
 		recv := ""
@@ -144,13 +144,24 @@ func createPackageDoc(importpath string, fileURLFmt string, srcURLFmt string, pr
 		})
 	}
 
+	funcs := funcDocs(fset, srcURLFmt, pdoc.Funcs)
+	consts := valueDocs(fset, srcURLFmt, pdoc.Consts)
+	vars := valueDocs(fset, srcURLFmt, pdoc.Vars)
+
+	if len(types) == 0 &&
+		len(funcs) == 0 &&
+		len(consts) == 0 &&
+		len(vars) == 0 {
+		return nil, errPackageNotFound
+	}
+
 	m := map[string]interface{}{
 		"doc":    pdoc.Doc,
 		"files":  fileNames,
 		"types":  types,
-		"funcs":  funcDocs(fset, srcURLFmt, pdoc.Funcs),
-		"consts": valueDocs(fset, srcURLFmt, pdoc.Consts),
-		"vars":   valueDocs(fset, srcURLFmt, pdoc.Vars),
+		"funcs":  funcs,
+		"consts": consts,
+		"vars":   vars,
 	}
 	data, err := json.Marshal(m)
 	if err != nil {

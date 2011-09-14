@@ -161,6 +161,7 @@ var buildPackageDocFunc = delay.Func("github.doc", buildPackageDoc)
 
 func buildPackageDoc(c appengine.Context, userRepo string, dir string, blobs []gitBlob) {
 	c.Infof("Starting build  for %s %s", userRepo, dir)
+	defer cacheClear(c, "/")
 	client := urlfetch.Client(c)
 	var files []file
 	for _, blob := range blobs {
@@ -198,6 +199,10 @@ func buildPackageDoc(c appengine.Context, userRepo string, dir string, blobs []g
 	if err != nil {
 		if err == errPackageNotFound {
 			c.Infof("failure generating json for %s, %v", importpath, err)
+			err := datastore.Delete(c, datastore.NewKey("PackageDoc", importpath, 0, nil))
+			if err != nil {
+				c.Infof("error clearing package %s, %v", importpath, err)
+			}
 		} else {
 			c.Errorf("failure generating json for %s, %v", importpath, err)
 		}
@@ -209,5 +214,4 @@ func buildPackageDoc(c appengine.Context, userRepo string, dir string, blobs []g
 		panic(err)
 	}
 	c.Infof("Created doc for %s %s", userRepo, dir)
-	cacheClear(c, "/")
 }
