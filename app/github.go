@@ -28,6 +28,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"url"
 )
 
 type gitBlob struct {
@@ -39,8 +40,8 @@ func init() {
 	gob.Register([]gitBlob{})
 }
 
-func httpGet(client *http.Client, url string) ([]byte, os.Error) {
-	resp, err := client.Get(url)
+func httpGet(client *http.Client, urlStr string) ([]byte, os.Error) {
+	resp, err := client.Get(urlStr)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +86,7 @@ func githubHook(w http.ResponseWriter, r *http.Request) {
 		c.Warningf("error reading req body, %v", err)
 		return
 	}
-	m, err := http.ParseQuery(string(p))
+	m, err := url.ParseQuery(string(p))
 	if err != nil {
 		c.Warningf("error parsing query, %v", err)
 		return
@@ -109,12 +110,12 @@ func githubHook(w http.ResponseWriter, r *http.Request) {
 		c.Infof("ignoring ref %s", n.Ref)
 		return
 	}
-	url, err := http.ParseURL(n.Repository.Url)
+	u, err := url.Parse(n.Repository.Url)
 	if err != nil {
 		c.Errorf("error parsing url %s, %v", n.Repository.Url, err)
 		return
 	}
-	userRepo := url.Path[1:]
+	userRepo := u.Path[1:]
 	findPackagesInRepoFunc.Call(c, userRepo)
 }
 
@@ -199,7 +200,7 @@ func buildPackageDoc(c appengine.Context, userRepo string, dir string, blobs []g
 	if err != nil {
 		if err == errPackageNotFound {
 			c.Infof("failure generating json for %s, %v", importpath, err)
-			err := datastore.Delete(c, datastore.NewKey("PackageDoc", importpath, 0, nil))
+			err := datastore.Delete(c, datastore.NewKey(c, "PackageDoc", importpath, 0, nil))
 			if err != nil {
 				c.Infof("error clearing package %s, %v", importpath, err)
 			}
@@ -208,7 +209,7 @@ func buildPackageDoc(c appengine.Context, userRepo string, dir string, blobs []g
 		}
 		return
 	}
-	_, err = datastore.Put(c, datastore.NewKey("PackageDoc", importpath, 0, nil), doc)
+	_, err = datastore.Put(c, datastore.NewKey(c, "PackageDoc", importpath, 0, nil), doc)
 	if err != nil {
 		c.Errorf("failure puting doc %s, %v", importpath, err)
 		panic(err)

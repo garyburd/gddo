@@ -17,6 +17,7 @@ package app
 import (
 	"appengine"
 	"appengine/datastore"
+	"bytes"
 	"go/doc"
 	"path"
 	"http"
@@ -27,30 +28,30 @@ import (
 	"time"
 )
 
-func parseTemplate(name string, fmap template.FormatterMap) func(io.Writer, interface{}) os.Error {
+func commentFmt(v string) string {
+	var buf bytes.Buffer
+	doc.ToHTML(&buf, []byte(v), nil)
+	return buf.String()
+}
+
+var fmap = template.FuncMap{"comment": commentFmt}
+
+func parseTemplate(name string) func(io.Writer, interface{}) os.Error {
 	if appengine.IsDevAppServer() {
 		return func(w io.Writer, value interface{}) os.Error {
-			return template.MustParseFile(name, fmap).Execute(w, value)
+			return template.Must(template.New(name).Funcs(fmap).ParseFile(name)).Execute(w, value)
 		}
 	}
-	t := template.MustParseFile(name, fmap)
+	t := template.Must(template.New(name).Funcs(fmap).ParseFile(name))
 	return func(w io.Writer, value interface{}) os.Error {
 		return t.Execute(w, value)
 	}
 }
 
-func commentFmt(w io.Writer, format string, x ...interface{}) {
-	doc.ToHTML(w, []byte(x[0].(string)), nil)
-}
-
-var homeTemplate = parseTemplate("template/home.html", template.FormatterMap{
-	"": template.HTMLFormatter,
-})
-
-var pkgTemplate = parseTemplate("template/pkg.html", template.FormatterMap{
-	"":        template.HTMLFormatter,
-	"comment": commentFmt,
-})
+var (
+	homeTemplate = parseTemplate("template/home.html")
+	pkgTemplate  = parseTemplate("template/pkg.html")
+)
 
 func internalError(w http.ResponseWriter, c appengine.Context, err os.Error) {
 	c.Errorf("Error %s", err.String())
@@ -64,7 +65,7 @@ func servePkg(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	key := datastore.NewKey("PackageDoc", importPath, 0, nil)
+	key := datastore.NewKey(c, "PackageDoc", importPath, 0, nil)
 	var doc PackageDoc
 	err := datastore.Get(appengine.NewContext(r), key, &doc)
 	if err == datastore.ErrNoSuchEntity {

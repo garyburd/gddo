@@ -10,9 +10,9 @@
 <h1>Package Documentation</h1>
 <hr>
 <ul>
-{.repeated section @}
-<li><a href="/pkg/{@}">{@}</a>
-{.end}
+{{range .}}
+<li><a href="/pkg/{{.|html}}">{{.|html}}</a>
+{{end}}
 </ul>
 <hr>
 <a name="info"></a>
