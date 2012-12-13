@@ -34,6 +34,7 @@ import (
 	"encoding/gob"
 	"flag"
 	"log"
+	"net/url"
 	"os"
 	"sort"
 	"strconv"
@@ -63,19 +64,33 @@ func (p byPath) Less(i, j int) bool { return p[i].Path < p[j].Path }
 func (p byPath) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 var (
-	redisServer      = flag.String("db-server", ":6379", "TCP address of Redis server.")
+	redisServer      = flag.String("db-server", "redis://127.0.0.0:6379", "Redis URI of Redis server.")
 	redisIdleTimeout = flag.Duration("db-idle-timeout", 250*time.Second, "Close Redis connections after remaining idle for this duration.")
 	redisLog         = flag.Bool("db-log", false, "Log database commands")
 )
 
 func dialDb() (redis.Conn, error) {
-	c, err := redis.Dial("tcp", *redisServer)
+	redisUri, err := url.Parse(*redisServer)
+	if err != nil {
+		return nil, err
+	}
+	c, err := redis.Dial("tcp", redisUri.Host)
 	if err != nil {
 		return nil, err
 	}
 	if *redisLog {
 		l := log.New(os.Stderr, "", log.LstdFlags)
 		c = redis.NewLoggingConn(c, l, "")
+	}
+
+	if redisUri.User != nil {
+		password, hasPassword := redisUri.User.Password()
+		if hasPassword {
+			_, err = redis.String(c.Do("AUTH", password))
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 	return c, nil
 }
