@@ -358,7 +358,9 @@ func main() {
 			AddGet("/C", web.RedirectHandler("http://golang.org/doc/articles/c_go_cgo.html", 301)).
 			AddGet("/<path:.*>", servePackage)))
 
-	listener, err := net.Listen("tcp", ":8080")
+	port := os.Getenv("PORT")
+	log.Printf("Listening on port %s\n", port)
+	listener, err := net.Listen("tcp", ":" + port)
 	if err != nil {
 		log.Fatal("Listen", err)
 		return
