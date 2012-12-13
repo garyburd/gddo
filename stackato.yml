@@ -2,12 +2,6 @@ name: gopkgdoc
 
 framework: buildpack
 
-hooks:
-  pre-staging:
-    - make switch-author
-    - echo $REDIS_URL
-#    - make stackato-redis-addr
-
 services:
   myredis: redis
 
