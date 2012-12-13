@@ -1,0 +1,10 @@
+name: gopkgdoc
+
+framework: buildpack
+
+hooks:
+  pre-staging:
+    - make switch-author
+
+services:
+  myredis: redis
