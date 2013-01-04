@@ -33,6 +33,7 @@ import (
 
 	"github.com/garyburd/gopkgdoc/database"
 	"github.com/garyburd/gopkgdoc/doc"
+	"github.com/garyburd/gopkgdoc/popularity"
 	"github.com/garyburd/indigo/server"
 	"github.com/garyburd/indigo/web"
 )
@@ -150,6 +151,11 @@ func servePackage(resp web.Response, req *web.Request) error {
 		}
 	}
 
+	if requestType != robotRequest {
+		freq.Add(path)
+		recent.Add(path)
+	}
+
 	switch req.Form.Get("view") {
 	case "imports":
 		if pdoc.Name == "" {
@@ -255,7 +261,7 @@ func serveHome(resp web.Response, req *web.Request) error {
 
 	q := strings.TrimSpace(req.Form.Get("q"))
 	if q == "" {
-		return executeTemplate(resp, "home"+templateExt(req), web.StatusOK, nil)
+		return executeTemplate(resp, "home"+templateExt(req), web.StatusOK, map[string]interface{}{ "freq": freq.Get(), "recent": recent.Get() })
 	}
 
 	if path, ok := isBrowseURL(q); ok {
@@ -320,6 +326,9 @@ var (
 	db              *database.Database
 )
 
+var freq *popularity.Frequent
+var recent *popularity.Recent
+
 func main() {
 	flag.Parse()
 	log.Printf("Starting server, os.Args=%s", strings.Join(os.Args, " "))
@@ -334,6 +343,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	freq = popularity.NewFrequent(10)
+	recent = popularity.NewRecent(10)
 
 	go crawl()
 

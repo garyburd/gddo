@@ -17,6 +17,23 @@
         </div>
     </div>
   </div>
+
+<div class="container" style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2">
+<p>Top 10 most frequently accessed packages:
+<ul>
+{{range .freq}}
+<li><a href="{{ url . }}">{{.}}</a></li>
+{{end}}
+</ul>
+
+<p>The 10 most recently accessed packages:
+<ul>
+{{range .recent}}
+<li><a href="{{ url . }}">{{.}}</a></li>
+{{end}}
+</ul>
+</div>
+
 </body>
 </html>
 {{end}}
