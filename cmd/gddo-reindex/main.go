@@ -37,5 +37,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Updated %d documnts", n)
+	log.Printf("Updated %d documents.", n)
 }
