@@ -377,10 +377,10 @@ func readSecrets() error {
 	if secrets.GithubId != "" {
 		doc.SetGithubCredentials(secrets.GithubId, secrets.GithubSecret)
 	} else {
-		log.Println("Github credentials not set in %q.", *secretsPath)
+		log.Printf("Github credentials not set in %q.", *secretsPath)
 	}
 	if secrets.GAAccount == "" {
-		log.Println("Google Analytics account not set in %q", *secretsPath)
+		log.Printf("Google Analytics account not set in %q", *secretsPath)
 	}
 	secrets.serviceAccountPEMBytes = []byte(strings.Join(secrets.ServiceAccountPEM, "\n"))
 	return nil
