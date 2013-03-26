@@ -143,7 +143,7 @@ func TestPutGet(t *testing.T) {
 	}
 
 	if err := db.Block("github.com/user/repo"); err != nil {
-		t.Errorf("db.Block() returned error %v, err")
+		t.Errorf("db.Block() returned error %v", err)
 	}
 
 	blocked, err := db.IsBlocked("github.com/user/repo/foo/bar")
