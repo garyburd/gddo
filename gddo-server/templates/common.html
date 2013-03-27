@@ -24,7 +24,7 @@
   {{breadcrumbs .pdoc (templateName)}}
   {{if and .pdoc.Name (equal templateName "pkg.html")}}
   <span class="pull-right">
-    <a href="#_index">Index</a> 
+    <a href="#_index">Index</a>
     <span class="muted">|</span> <a href="#_files">Files</a>
     {{if .pkgs}}<span class="muted">|</span> <a href="#_subdirs">Directories</a>{{end}}
   </span>
@@ -41,8 +41,20 @@
 
 {{define "Pkgs"}}
     <table class="table table-condensed">
-    <thead><tr><th>Path</th><th>Synopsis</th></tr></thead>
-    <tbody>{{range .}}<tr><td>{{if .Path|isValidImportPath}}<a href="/{{.Path}}">{{.Path|importPath}}</a>{{else}}{{.Path|importPath}}{{end}}<td>{{.Synopsis|importPath}}</td></tr>{{end}}</tbody>
+      <thead>
+        <tr>
+          <th>Path</th>
+          <th>Synopsis</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .}}
+          <tr>
+            <td>{{if .Path|isValidImportPath}}<a href="/{{.Path}}">{{.Path|importPath}}</a>{{else}}{{.Path|importPath}}{{end}}</td>
+            <td>{{.Synopsis|importPath}}</td>
+          </tr>
+        {{end}}
+      </tbody>
     </table>
 {{end}}
 
