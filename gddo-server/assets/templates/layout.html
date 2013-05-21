@@ -1,7 +1,9 @@
 {{define "ROOT"}}<!DOCTYPE html><html lang="en">
-<meta charset="utf-8">
-<link href="{{staticFile "css/bootstrap.css"}}" rel="stylesheet">
-{{template "Head" $}}
+<head profile="http://a9.com/-/spec/opensearch/1.1/">
+  <meta charset="utf-8">
+  <link href="{{staticFile "css/bootstrap.css"}}" rel="stylesheet">
+  {{template "Head" $}}
+</head>
 <body>
 <div class="container">
   <div class="navbar navbar-inverse">
@@ -17,8 +19,8 @@
   </div>
   {{template "Body" $}}
   <div class="container">
-    <div class="flat-well well-small"><a href="http://twitter.com/GoDocDotOrg">@GoDocDotOrg</a> 
-      <span class="muted">|</span> <a href="mailto:info@godoc.org">Feedback</a> 
+    <div class="flat-well well-small"><a href="http://twitter.com/GoDocDotOrg">@GoDocDotOrg</a>
+      <span class="muted">|</span> <a href="mailto:info@godoc.org">Feedback</a>
       <span class="muted">|</span> <a href="https://github.com/garyburd/gddo/issues">Website Issues</a>
       <span class="pull-right"><a href="#">Back to top</a></span>
     </div>
