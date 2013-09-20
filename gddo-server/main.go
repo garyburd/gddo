@@ -774,6 +774,7 @@ func main() {
 	r.Add("/a/index").Get(web.RedirectHandler("/-/index", 301))
 	r.Add("/about").Get(web.RedirectHandler("/-/about", 301))
 	r.Add("/favicon.ico").Get(staticConfig.FileHandler("favicon.ico"))
+	r.Add("/badge.png").Get(staticConfig.FileHandler("badge.png"))
 	r.Add("/google3d2f3cd4cc2bb44b.html").Get(staticConfig.FileHandler("google3d2f3cd4cc2bb44b.html"))
 	r.Add("/humans.txt").Get(staticConfig.FileHandler("humans.txt"))
 	r.Add("/robots.txt").Get(staticConfig.FileHandler("robots.txt"))

@@ -82,4 +82,15 @@ and Google Project Hosting to the package documentation. To install the
 bookmarklet, click and drag the following link to your bookmark bar: <a
  href="javascript:window.location='http://{{.Host|html}}/?q='+encodeURIComponent(window.location)">GoDoc</a>
 
+<h4 id="badge">Badge <img src="/badge.png" width="56" height="18"></h4>
+
+<p>If you would like a badge for your README, you can reference the image at
+http://{{.Host|html}}/badge.png. Replace the <em>&lt;import path&gt;</em> in the following
+Markdown to link to your documentation page on GoDoc.</p>
+
+<pre>
+[![GoDoc](http://{{.Host|html}}/badge.png)](http://{{.Host|html}}/&lt;import path&gt;)
+</pre>
+
+
 {{end}}
