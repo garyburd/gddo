@@ -177,8 +177,7 @@ func servePackage(resp web.Response, req *web.Request) error {
 	}
 
 	if isView(req, "status.png") {
-		// 302 temporary redirect
-		return web.Redirect(resp, req, "/status.png", 302, nil)
+		return statusHandler.ServeWeb(resp, req)
 	}
 
 	importPath := req.RouteVars["path"]
@@ -661,6 +660,7 @@ var (
 	redirGoTalks    = flag.Bool("redirGoTalks", true, "Redirect paths with prefix 'code.google.com/p/go.talks/' to talks.golang.org")
 	srcZip          = flag.String("srcZip", "", "")
 	srcFiles        = make(map[string]*zip.File)
+	statusHandler   web.Handler
 )
 
 var cacheBusters = map[string]string{}
@@ -745,6 +745,8 @@ func main() {
 		GzDirectory: *gzAssetsDir,
 	}
 
+	statusHandler = staticConfig.FileHandler("status.png")
+
 	h := web.NewHostRouter()
 
 	r := web.NewRouter()
@@ -779,7 +781,7 @@ func main() {
 	r.Add("/a/index").Get(web.RedirectHandler("/-/index", 301))
 	r.Add("/about").Get(web.RedirectHandler("/-/about", 301))
 	r.Add("/favicon.ico").Get(staticConfig.FileHandler("favicon.ico"))
-	r.Add("/status.png").Get(staticConfig.FileHandler("status.png"))
+	r.Add("/status.png").Get(statusHandler)
 	r.Add("/google3d2f3cd4cc2bb44b.html").Get(staticConfig.FileHandler("google3d2f3cd4cc2bb44b.html"))
 	r.Add("/humans.txt").Get(staticConfig.FileHandler("humans.txt"))
 	r.Add("/robots.txt").Get(staticConfig.FileHandler("robots.txt"))
