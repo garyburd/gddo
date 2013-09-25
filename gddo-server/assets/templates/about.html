@@ -80,17 +80,17 @@ pages. Type '?' on a package page for help.
 <p>The GoDoc bookmarklet navigates from pages on Bitbucket, GitHub Launchpad
 and Google Project Hosting to the package documentation. To install the
 bookmarklet, click and drag the following link to your bookmark bar: <a
- href="javascript:window.location='http://{{.Host|html}}/?q='+encodeURIComponent(window.location)">GoDoc</a>
+ href="javascript:window.location='http://{{.Host}}/?q='+encodeURIComponent(window.location)">GoDoc</a>
 
-<h4 id="badge">Badge <img src="/badge.png" width="56" height="18"></h4>
+<h4 id="badge">Badge <img src="/status.png" width="56" height="18"></h4>
 
-<p>If you would like a badge for your README, you can reference the image at
-http://{{.Host|html}}/badge.png. Replace the <em>&lt;import path&gt;</em> in the following
-Markdown to link to your documentation page on GoDoc.</p>
+<p>To link to your documentation page on GoDoc, add the following Markdown to
+your README:</p>
 
 <pre>
-[![GoDoc](http://{{.Host|html}}/badge.png)](http://{{.Host|html}}/&lt;import path&gt;)
+[![GoDoc](http://{{.Host}}/&lt;import path&gt;?status.png)](http://{{.Host}}/&lt;import path&gt;)
 </pre>
 
+<p>Be sure to replace the <em>&lt;import path&gt;</em></p>
 
 {{end}}

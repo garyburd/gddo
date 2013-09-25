@@ -176,6 +176,11 @@ func servePackage(resp web.Response, req *web.Request) error {
 		requestType = robotRequest
 	}
 
+	if isView(req, "status.png") {
+		// 302 temporary redirect
+		return web.Redirect(resp, req, "/status.png", 302, nil)
+	}
+
 	importPath := req.RouteVars["path"]
 	pdoc, pkgs, err := getDoc(importPath, requestType)
 	if err != nil {
@@ -774,7 +779,7 @@ func main() {
 	r.Add("/a/index").Get(web.RedirectHandler("/-/index", 301))
 	r.Add("/about").Get(web.RedirectHandler("/-/about", 301))
 	r.Add("/favicon.ico").Get(staticConfig.FileHandler("favicon.ico"))
-	r.Add("/badge.png").Get(staticConfig.FileHandler("badge.png"))
+	r.Add("/status.png").Get(staticConfig.FileHandler("status.png"))
 	r.Add("/google3d2f3cd4cc2bb44b.html").Get(staticConfig.FileHandler("google3d2f3cd4cc2bb44b.html"))
 	r.Add("/humans.txt").Get(staticConfig.FileHandler("humans.txt"))
 	r.Add("/robots.txt").Get(staticConfig.FileHandler("robots.txt"))
