@@ -40,36 +40,8 @@ Optional:
 API
 ---
 
-The GoDoc API is comprised of these endpoints:
+There are four API endpoints. See [gddo-server/main.go](https://github.com/garyburd/gddo/blob/8baf8dd2442efe39f7b132d20f70f73c62e2b2b7/gddo-server/main.go#L866-L869).
 
-**api.godoc.org/importers/`ImportPath`**&mdash;Returns packages that import ImportPath, in JSON format.
+With the exception of the `/packages` endpoint, all package lists contain a synopsis if present in the code.
 
-```json
-{
-	"results": [
-		{
-			"path": "import/path/one"
-		},
-		{
-			"path": "import/path/two"
-		}
-	]
-}
-```
-
-**api.godoc.org/search?q=`Query`**&mdash;Returns search results for Query, in JSON format.
-
-```json
-{
-	"results": [
-		{
-			"path": "import/path/one",
-			"synopsis": "Package synopsis is here."
-		},
-		{
-			"path": "import/path/two",
-			"synopsis": "Package synopsis is here."
-		}
-	]
-}
-```
+A plain text interface is documented at <http://godoc.org/-/about>.
