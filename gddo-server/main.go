@@ -295,9 +295,9 @@ func servePackage(resp http.ResponseWriter, req *http.Request) error {
 		})
 	case isView(req, "tools"):
 		proto := "http"
-		if req.Host == "godoc.org" {
-			proto = "https"
-		}
+		// if req.Host == "godoc.org" {
+		// 	proto = "https"
+		// }
 		return executeTemplate(resp, "tools.html", http.StatusOK, nil, map[string]interface{}{
 			"uri":  fmt.Sprintf("%s://%s/%s", proto, req.Host, importPath),
 			"pdoc": newTDoc(pdoc),
