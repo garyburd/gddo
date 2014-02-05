@@ -1,9 +1,9 @@
 .container { max-width: 970px; }
 
 .section-header {
-  padding-bottom: 4px;
-  margin: 20px 0 10px;
-  border-bottom: 1px solid #eeeeee;
+    padding-bottom: 4px;
+    margin: 20px 0 10px;
+    border-bottom: 1px solid #eeeeee;
 }
 
 /* Sidebar navigation (copied from bootstrap docs.css) */
@@ -21,11 +21,16 @@
     position: static;
 }
 
+.gddo-sidebar .nav {
+    overflow: auto;
+    height: 95%;
+}
+
 /* All levels of nav */
 .gddo-sidebar .nav > li > a {
     display: block;
     color: #716b7a;
-    padding: 5px 20px;
+    padding: 5px 0px;
 }
 .gddo-sidebar .nav > li > a:hover,
 .gddo-sidebar .nav > li > a:focus {
@@ -48,7 +53,7 @@
 .gddo-sidebar .nav .nav > li > a {
     padding-top:    3px;
     padding-bottom: 3px;
-    padding-left: 30px;
+    padding-left: 15px;
     font-size: 90%;
 }
 
