@@ -160,15 +160,18 @@ func fetchMeta(client *http.Client, importPath string) (map[string]string, error
 	c := httpClient{client: client}
 	scheme := "https"
 	resp, err := c.get(scheme + "://" + uri)
-	if err != nil || resp.StatusCode != 200 {
-		if err == nil {
-			resp.Body.Close()
+	if err == nil && resp.StatusCode == 200 {
+		defer resp.Body.Close()
+		// Check if it is on the HTTPS page. If so return the result. If not we check http.
+		if r, err := parseMeta(scheme, importPath, resp.Body); err == nil {
+			return r, err
 		}
-		scheme = "http"
-		resp, err = c.get(scheme + "://" + uri)
-		if err != nil {
-			return nil, err
-		}
+	}
+
+	scheme = "http"
+	resp, err = c.get(scheme + "://" + uri)
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
 	return parseMeta(scheme, importPath, resp.Body)
