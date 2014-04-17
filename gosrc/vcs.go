@@ -97,7 +97,7 @@ type vcsCmd struct {
 
 var vcsCmds = map[string]*vcsCmd{
 	"git": {
-		schemes:  []string{"http", "https", "git"},
+		schemes:  []string{"ssh", "http", "https", "git"},
 		download: downloadGit,
 	},
 }
