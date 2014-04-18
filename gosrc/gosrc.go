@@ -10,6 +10,7 @@ package gosrc
 import (
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"path"
@@ -157,24 +158,34 @@ func fetchMeta(client *http.Client, importPath string) (map[string]string, error
 	}
 	uri = uri + "?go-get=1"
 
+	var lastErr error
 	c := httpClient{client: client}
-	scheme := "https"
-	resp, err := c.get(scheme + "://" + uri)
-	if err == nil && resp.StatusCode == 200 {
-		defer resp.Body.Close()
-		// Check if it is on the HTTPS page. If so return the result. If not we check http.
-		if r, err := parseMeta(scheme, importPath, resp.Body); err == nil {
-			return r, err
+
+	for _, scheme := range []string{"https", "http"} {
+		url := scheme + "://" + uri
+		resp, err := c.get(url)
+		if err != nil {
+			lastErr = err
+			continue
 		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			lastErr = fmt.Errorf("%q returned status code %d; want 200", url, resp.StatusCode)
+			continue
+		}
+
+		r, err := parseMeta(scheme, importPath, resp.Body)
+		if err != nil {
+			lastErr = err
+			continue
+		}
+
+		return r, nil
 	}
 
-	scheme = "http"
-	resp, err = c.get(scheme + "://" + uri)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	return parseMeta(scheme, importPath, resp.Body)
+	// Return last found err
+	return nil, lastErr
 }
 
 func parseMeta(scheme, importPath string, r io.Reader) (map[string]string, error) {
