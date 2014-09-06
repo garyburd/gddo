@@ -7,6 +7,8 @@
 package gosrc
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -81,6 +83,34 @@ func (c *httpClient) getJSON(url string, v interface{}) (*http.Response, error) 
 		return resp, c.err(resp)
 	}
 	err = json.NewDecoder(resp.Body).Decode(v)
+	if _, ok := err.(*json.SyntaxError); ok {
+		err = NotFoundError{"JSON syntax error at " + url}
+	}
+	return resp, err
+}
+
+var nonExecutable = []byte(")]}'\n")
+
+// getNonExecutableJSON strips ")]}'\n" if present.
+func (c *httpClient) getNonExecutableJSON(url string, v interface{}) (*http.Response, error) {
+	resp, err := c.get(url)
+	if err != nil {
+		return resp, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return resp, c.err(resp)
+	}
+	body := bufio.NewReader(resp.Body)
+	header, err := body.Peek(len(nonExecutable))
+	if err != nil {
+		return resp, err
+	}
+	if bytes.Compare(header, nonExecutable) == 0 {
+		// Skip it.
+		body.Read(make([]byte, len(nonExecutable)))
+	}
+	err = json.NewDecoder(body).Decode(v)
 	if _, ok := err.(*json.SyntaxError); ok {
 		err = NotFoundError{"JSON syntax error at " + url}
 	}
