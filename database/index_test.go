@@ -7,10 +7,11 @@
 package database
 
 import (
-	"github.com/golang/gddo/doc"
 	"reflect"
 	"sort"
 	"testing"
+
+	"github.com/golang/gddo/doc"
 )
 
 var indexTests = []struct {
@@ -96,5 +97,29 @@ func TestDocTerms(t *testing.T) {
 		if !reflect.DeepEqual(terms, tt.terms) {
 			t.Errorf("documentTerms(%s)=%#v, want %#v", tt.pdoc.ImportPath, terms, tt.terms)
 		}
+	}
+}
+
+func TestInternalPathScore(t *testing.T) {
+	pdoc := &doc.Package{
+		Name:       "ucd",
+		ImportPath: "code.google.com/p/go.text/internal/ucd",
+		Truncated:  true,
+	}
+	score := documentScore(pdoc)
+	if score != 0 {
+		t.Errorf("documentScore(%s)=%#v, want %#v", pdoc, score, 0)
+	}
+}
+
+func TestThirdPartyPathScore(t *testing.T) {
+	pdoc := &doc.Package{
+		Name:       "fuse",
+		ImportPath: "camlistore.org/third_party/bazil.org/fuse",
+		Truncated:  true,
+	}
+	score := documentScore(pdoc)
+	if score != 0 {
+		t.Errorf("documentScore(%s)=%#v, want %#v", pdoc, score, 0)
 	}
 }
