@@ -7,6 +7,7 @@
 package database
 
 import (
+	"math"
 	"reflect"
 	"sort"
 	"testing"
@@ -100,26 +101,30 @@ func TestDocTerms(t *testing.T) {
 	}
 }
 
-func TestInternalPathScore(t *testing.T) {
-	pdoc := &doc.Package{
-		Name:       "ucd",
-		ImportPath: "code.google.com/p/go.text/internal/ucd",
-		Truncated:  true,
+func TestDocumentScore(t *testing.T) {
+	tests := []struct {
+		path     string
+		expected float64
+	}{
+		{"code.google.com/p/go.text/internal/ucd", 0},
+		{"code.google.com/p/go.text/internal", 0},
+		{"camlistore.org/third_party/bazil.org/fuse", 0},
+		{"bazil.org/fuse", 0.846}, // not zero
 	}
-	score := documentScore(pdoc)
-	if score != 0 {
-		t.Errorf("documentScore(%s)=%#v, want %#v", pdoc, score, 0)
+
+	for _, tt := range tests {
+		pdoc := &doc.Package{
+			Name:       "name",
+			ImportPath: tt.path,
+			Truncated:  true,
+		}
+		actual := documentScore(pdoc)
+		if !within(actual, tt.expected, 0.001) {
+			t.Errorf("documentScore=%#v, want %#v for %s", actual, tt.expected, tt.path)
+		}
 	}
 }
 
-func TestThirdPartyPathScore(t *testing.T) {
-	pdoc := &doc.Package{
-		Name:       "fuse",
-		ImportPath: "camlistore.org/third_party/bazil.org/fuse",
-		Truncated:  true,
-	}
-	score := documentScore(pdoc)
-	if score != 0 {
-		t.Errorf("documentScore(%s)=%#v, want %#v", pdoc, score, 0)
-	}
+func within(actual, expected, delta float64) bool {
+	return math.Abs(actual-expected) <= delta
 }

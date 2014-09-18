@@ -20,16 +20,6 @@ func isStandardPackage(path string) bool {
 	return strings.Index(path, ".") < 0
 }
 
-var thirdPartyDirPat = regexp.MustCompile(`/(?:third_party)/`)
-
-func isThirdParty(importPath string) bool {
-	m := thirdPartyDirPat.FindStringIndex(importPath)
-	if m == nil {
-		return false
-	}
-	return true
-}
-
 func isTermSep(r rune) bool {
 	return unicode.IsSpace(r) || unicode.IsPunct(r) || unicode.IsSymbol(r)
 }
@@ -113,14 +103,22 @@ func documentTerms(pdoc *doc.Package, score float64) []string {
 	return result
 }
 
+func isExcludePath(path string) bool {
+	if strings.HasSuffix(path, ".go") ||
+		strings.HasPrefix(path, "gist.github.com/") ||
+		strings.Contains(path, "/internal/") ||
+		strings.HasSuffix(path, "/internal") ||
+		strings.Contains(path, "/third_party/") {
+		return true
+	}
+	return false
+}
+
 func documentScore(pdoc *doc.Package) float64 {
 	if pdoc.Name == "" ||
 		pdoc.IsCmd ||
 		len(pdoc.Errors) > 0 ||
-		strings.HasSuffix(pdoc.ImportPath, ".go") ||
-		strings.HasPrefix(pdoc.ImportPath, "gist.github.com/") ||
-		strings.Contains(pdoc.ImportPath, "/internal/") ||
-		isThirdParty(pdoc.ImportPath) {
+		isExcludePath(pdoc.ImportPath) {
 		return 0
 	}
 
