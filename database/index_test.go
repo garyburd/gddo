@@ -7,7 +7,6 @@
 package database
 
 import (
-	"math"
 	"reflect"
 	"sort"
 	"testing"
@@ -101,30 +100,21 @@ func TestDocTerms(t *testing.T) {
 	}
 }
 
-func TestDocumentScore(t *testing.T) {
+func TestExcludedPath(t *testing.T) {
 	tests := []struct {
 		path     string
-		expected float64
+		expected bool
 	}{
-		{"code.google.com/p/go.text/internal/ucd", 0},
-		{"code.google.com/p/go.text/internal", 0},
-		{"camlistore.org/third_party/bazil.org/fuse", 0},
-		{"bazil.org/fuse", 0.846}, // not zero
+		{"code.google.com/p/go.text/internal/ucd", true},
+		{"code.google.com/p/go.text/internal", true},
+		{"camlistore.org/third_party/bazil.org/fuse", true},
+		{"bazil.org/fuse", false},
 	}
 
 	for _, tt := range tests {
-		pdoc := &doc.Package{
-			Name:       "name",
-			ImportPath: tt.path,
-			Truncated:  true,
-		}
-		actual := documentScore(pdoc)
-		if !within(actual, tt.expected, 0.001) {
-			t.Errorf("documentScore=%#v, want %#v for %s", actual, tt.expected, tt.path)
+		actual := isExcludedPath(tt.path)
+		if actual != tt.expected {
+			t.Errorf("isExcludedPath=%t, want %t for %s", actual, tt.expected, tt.path)
 		}
 	}
-}
-
-func within(actual, expected, delta float64) bool {
-	return math.Abs(actual-expected) <= delta
 }

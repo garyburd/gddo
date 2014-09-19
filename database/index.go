@@ -103,7 +103,7 @@ func documentTerms(pdoc *doc.Package, score float64) []string {
 	return result
 }
 
-func isExcludePath(path string) bool {
+func isExcludedPath(path string) bool {
 	if strings.HasSuffix(path, ".go") ||
 		strings.HasPrefix(path, "gist.github.com/") ||
 		strings.Contains(path, "/internal/") ||
@@ -118,7 +118,7 @@ func documentScore(pdoc *doc.Package) float64 {
 	if pdoc.Name == "" ||
 		pdoc.IsCmd ||
 		len(pdoc.Errors) > 0 ||
-		isExcludePath(pdoc.ImportPath) {
+		isExcludedPath(pdoc.ImportPath) {
 		return 0
 	}
 
