@@ -274,6 +274,7 @@ var (
 	h3Pat      = regexp.MustCompile(`<h3 id="([^"]+)">([^<]+)</h3>`)
 	rfcPat     = regexp.MustCompile(`RFC\s+(\d{3,4})`)
 	packagePat = regexp.MustCompile(`\s+package\s+([-a-z0-9]\S+)`)
+	examplePat = regexp.MustCompile(`func Example.*\(\)`)
 )
 
 func replaceAll(src []byte, re *regexp.Regexp, replace func(out, src []byte, m []int) []byte) []byte {
@@ -391,7 +392,15 @@ func codeFn(c doc.Code, typ *doc.Type) htemp.HTML {
 		last = int(a.End)
 	}
 	htemp.HTMLEscape(&buf, src[last:])
-	return htemp.HTML(buf.String())
+
+	// Now if only one example function with the right signature
+	// is available, replace with func main()
+	code := buf.String()
+	if len(examplePat.FindStringSubmatch(code)) == 1 {
+		code = examplePat.ReplaceAllLiteralString(code, "func main()")
+	}
+
+	return htemp.HTML(code)
 }
 
 var gaAccount string
