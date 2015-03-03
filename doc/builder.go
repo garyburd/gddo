@@ -16,6 +16,7 @@ import (
 	"go/parser"
 	"go/token"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
@@ -456,6 +457,20 @@ var goEnvs = []struct{ GOOS, GOARCH string }{
 	{"linux", "amd64"},
 	{"darwin", "amd64"},
 	{"windows", "amd64"},
+}
+
+// Ensure each new package is parsed against target's architecture first.
+func init() {
+	var i int
+	for i = range goEnvs {
+		if goEnvs[i].GOOS == runtime.GOOS && goEnvs[i].GOARCH == runtime.GOARCH {
+			break
+		}
+	}
+	if i == 0 || i == len(goEnvs) {
+		return
+	}
+	goEnvs[0], goEnvs[i] = goEnvs[i], goEnvs[0]
 }
 
 func newPackage(dir *gosrc.Directory) (*Package, error) {
