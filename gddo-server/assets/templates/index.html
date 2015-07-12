@@ -2,9 +2,10 @@
 
 {{define "Body"}}
   <h1>Index</h1>
-  <p>The following is a list of '<a
+  <p>The following is a list of <a
     href="http://golang.org/cmd/go/#hdr-Download_and_install_packages_and_dependencies">go
-    get</a>'able packages on godoc.org. A <a href="/-/go">list of Go standard packages</a> is also available.
+    get</a>table packages {{if .prefix}}with the prefix <code>{{.prefix}}</code>.{{else}}.
+    A <a href="/-/go">list of Go standard packages</a> is also available.{{end}}
 
   {{htmlComment "\nPlease use http://api.godoc.org/packages instead of scraping this page.\n"}}
   {{template "Pkgs" .pkgs}}

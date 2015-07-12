@@ -233,19 +233,39 @@ func servePackage(resp http.ResponseWriter, req *http.Request) error {
 	importPath := strings.TrimPrefix(req.URL.Path, "/")
 	pdoc, pkgs, err := getDoc(importPath, requestType)
 
-	if e, ok := err.(gosrc.NotFoundError); ok && e.Redirect != "" {
-		// To prevent dumb clients from following redirect loops, respond with
-		// status 404 if the target document is not found.
-		if _, _, err := getDoc(e.Redirect, requestType); gosrc.IsNotFound(err) {
-			return &httpError{status: http.StatusNotFound}
+	if e, ok := err.(gosrc.NotFoundError); ok {
+		// If this is a package path prefix (e.g. "github.com/golang"),
+		// serve up a subset of the package index.
+		pkgs, etag, err := db.Index(importPath)
+		if err != nil {
+			return err
 		}
-		u := "/" + e.Redirect
-		if req.URL.RawQuery != "" {
-			u += "?" + req.URL.RawQuery
+		if len(pkgs) > 0 {
+			status := http.StatusOK
+			if req.Header.Get("If-None-Match") == etag {
+				status = http.StatusNotModified
+			}
+			return executeTemplate(resp, "index.html", status, http.Header{"Etag": {etag}}, map[string]interface{}{
+				"pkgs":   pkgs,
+				"prefix": importPath,
+			})
 		}
-		setFlashMessages(resp, []flashMessage{{ID: "redir", Args: []string{importPath}}})
-		http.Redirect(resp, req, u, http.StatusFound)
-		return nil
+
+		// Not found.
+		if e.Redirect != "" {
+			// To prevent dumb clients from following redirect loops, respond with
+			// status 404 if the target document is not found.
+			if _, _, err := getDoc(e.Redirect, requestType); gosrc.IsNotFound(err) {
+				return &httpError{status: http.StatusNotFound}
+			}
+			u := "/" + e.Redirect
+			if req.URL.RawQuery != "" {
+				u += "?" + req.URL.RawQuery
+			}
+			setFlashMessages(resp, []flashMessage{{ID: "redir", Args: []string{importPath}}})
+			http.Redirect(resp, req, u, http.StatusFound)
+			return nil
+		}
 	}
 	if err != nil {
 		return err
@@ -455,7 +475,7 @@ func serveGoSubrepoIndex(resp http.ResponseWriter, req *http.Request) error {
 }
 
 func serveIndex(resp http.ResponseWriter, req *http.Request) error {
-	pkgs, etag, err := db.Index()
+	pkgs, etag, err := db.Index("")
 	if err != nil {
 		return err
 	}

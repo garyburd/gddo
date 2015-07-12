@@ -596,7 +596,7 @@ func (db *Database) GoSubrepoIndex() ([]Package, error) {
 	return db.getPackages("index:project:subrepo", false)
 }
 
-func (db *Database) Index() (index []Package, indexHash string, err error) {
+func (db *Database) indexLoad() (index []Package, indexHash string, err error) {
 	db.indexMu.Lock()
 	index = db.index
 	indexHash = db.indexHash
@@ -615,6 +615,25 @@ func (db *Database) Index() (index []Package, indexHash string, err error) {
 	db.index = index
 	db.indexHash = indexHash
 	db.indexMu.Unlock()
+	return index, indexHash, nil
+}
+
+func (db *Database) Index(prefix string) (index []Package, indexHash string, err error) {
+	index, indexHash, err = db.indexLoad()
+	if err != nil {
+		return nil, "", err
+	}
+	if prefix != "" {
+		first := sort.Search(len(index), func(n int) bool {
+			return index[n].Path >= prefix
+		})
+		index = index[first:]
+		last := sort.Search(len(index), func(n int) bool {
+			return !strings.HasPrefix(index[n].Path, prefix)
+		})
+		index = index[:last]
+		indexHash = pkgsHash(index)
+	}
 	return index, indexHash, nil
 }
 
