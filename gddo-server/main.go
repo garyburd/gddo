@@ -455,11 +455,15 @@ func serveGoSubrepoIndex(resp http.ResponseWriter, req *http.Request) error {
 }
 
 func serveIndex(resp http.ResponseWriter, req *http.Request) error {
-	pkgs, err := db.Index()
+	pkgs, etag, err := db.Index()
 	if err != nil {
 		return err
 	}
-	return executeTemplate(resp, "index.html", http.StatusOK, nil, map[string]interface{}{
+	status := http.StatusOK
+	if req.Header.Get("If-None-Match") == etag {
+		status = http.StatusNotModified
+	}
+	return executeTemplate(resp, "index.html", status, http.Header{"Etag": {etag}}, map[string]interface{}{
 		"pkgs": pkgs,
 	})
 }
