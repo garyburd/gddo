@@ -12,20 +12,26 @@ import (
 	"strconv"
 )
 
+// ResponseBuffer is the current response being composed by its owner.
+// It implements the http.ResponseWriter interfaces: Write, WriteHeader, and Header,
+// as well as io.WriterTo interface.
 type ResponseBuffer struct {
 	buf    bytes.Buffer
 	status int
 	header http.Header
 }
 
+// Write implements the ResponseWriter interface on a ResponseBuffer
 func (rb *ResponseBuffer) Write(p []byte) (int, error) {
 	return rb.buf.Write(p)
 }
 
+// WriteHeader implements the ResponseWriter interface on a ResponseBuffer
 func (rb *ResponseBuffer) WriteHeader(status int) {
 	rb.status = status
 }
 
+// Header implements the ResponseWriter interface on a ResponseBuffer
 func (rb *ResponseBuffer) Header() http.Header {
 	if rb.header == nil {
 		rb.header = make(http.Header)
@@ -33,6 +39,7 @@ func (rb *ResponseBuffer) Header() http.Header {
 	return rb.header
 }
 
+// WriteTo implements the io.WriterTo interface on a ResponseBuffer
 func (rb *ResponseBuffer) WriteTo(w http.ResponseWriter) error {
 	for k, v := range rb.header {
 		w.Header()[k] = v
