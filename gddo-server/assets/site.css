@@ -35,6 +35,13 @@ code {
     padding: 0;
 }
 
+.fixed {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    padding: 1px 3px;
+    white-space: pre;
+}
+
 pre {
     color: #222;
     overflow: auto;
