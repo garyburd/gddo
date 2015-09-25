@@ -149,6 +149,7 @@ type builder struct {
 	fset     *token.FileSet
 	examples []*doc.Example
 	buf      []byte // scratch space for printNode method.
+	standard bool   // pkg is in stdlib
 }
 
 type Value struct {
@@ -230,7 +231,7 @@ func (b *builder) getExamples(name string) []*Example {
 		code, output := b.printExample(e)
 
 		play := ""
-		if e.Play != nil {
+		if e.Play != nil && b.standard {
 			b.buf = b.buf[:0]
 			if err := format.Node(sliceWriter{&b.buf}, b.fset, e.Play); err != nil {
 				play = err.Error()
@@ -498,6 +499,7 @@ func newPackage(dir *gosrc.Directory) (*Package, error) {
 	}
 
 	var b builder
+	b.standard = gosrc.IsGoRepoPath(pkg.ImportPath)
 	b.srcs = make(map[string]*source)
 	references := make(map[string]bool)
 	for _, file := range dir.Files {
