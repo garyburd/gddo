@@ -35,6 +35,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"hash/fnv"
+	"io"
 	"log"
 	"math"
 	"net/url"
@@ -43,6 +45,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -55,6 +58,11 @@ type Database struct {
 	Pool interface {
 		Get() redis.Conn
 	}
+
+	// In-memory cache of complete package index.
+	indexMu   sync.Mutex // guards indexHash, index.
+	indexHash string
+	index     []Package
 }
 
 type Package struct {
@@ -73,6 +81,17 @@ var (
 	redisIdleTimeout = flag.Duration("db-idle-timeout", 250*time.Second, "Close Redis connections after remaining idle for this duration.")
 	redisLog         = flag.Bool("db-log", false, "Log database commands")
 )
+
+func pkgsHash(pkgs []Package) string {
+	nl := []byte{'\n'}
+	h := fnv.New64a()
+	for _, p := range pkgs {
+		io.WriteString(h, p.Path)
+		io.WriteString(h, p.Synopsis)
+		h.Write(nl)
+	}
+	return "pkg-" + strconv.FormatUint(h.Sum64(), 16)
+}
 
 func dialDb() (c redis.Conn, err error) {
 	u, err := url.Parse(*redisServer)
@@ -200,6 +219,12 @@ func (db *Database) AddNewCrawl(importPath string) error {
 
 // Put adds the package documentation to the database.
 func (db *Database) Put(pdoc *doc.Package, nextCrawl time.Time, hide bool) error {
+	// Invalidate package index.
+	db.indexMu.Lock()
+	db.index = nil
+	db.indexHash = ""
+	db.indexMu.Unlock()
+
 	c := db.Pool.Get()
 	defer c.Close()
 
@@ -565,8 +590,45 @@ func (db *Database) GoSubrepoIndex() ([]Package, error) {
 	return db.getPackages("index:project:subrepo", false)
 }
 
-func (db *Database) Index() ([]Package, error) {
-	return db.getPackages("index:all:", false)
+func (db *Database) indexLoad() (index []Package, indexHash string, err error) {
+	db.indexMu.Lock()
+	index = db.index
+	indexHash = db.indexHash
+	db.indexMu.Unlock()
+
+	if index != nil {
+		return index, indexHash, nil
+	}
+
+	index, err = db.getPackages("index:all:", false)
+	if err != nil {
+		return nil, "", err
+	}
+	indexHash = pkgsHash(index)
+	db.indexMu.Lock()
+	db.index = index
+	db.indexHash = indexHash
+	db.indexMu.Unlock()
+	return index, indexHash, nil
+}
+
+func (db *Database) Index(prefix string) (index []Package, indexHash string, err error) {
+	index, indexHash, err = db.indexLoad()
+	if err != nil {
+		return nil, "", err
+	}
+	if prefix != "" {
+		first := sort.Search(len(index), func(n int) bool {
+			return index[n].Path >= prefix
+		})
+		index = index[first:]
+		last := sort.Search(len(index), func(n int) bool {
+			return !strings.HasPrefix(index[n].Path, prefix)
+		})
+		index = index[:last]
+		indexHash = pkgsHash(index)
+	}
+	return index, indexHash, nil
 }
 
 func (db *Database) Project(projectRoot string) ([]Package, error) {
