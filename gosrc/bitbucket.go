@@ -15,7 +15,7 @@ import (
 
 func init() {
 	addService(&service{
-		pattern: regexp.MustCompile(`^bitbucket\.org/(?P<owner>[a-z0-9A-Z_.\-]+)/(?P<repo>[a-z0-9A-Z_.\-]+)(?P<dir>/[a-z0-9A-Z_.\-/]*)?$`),
+		pattern: regexp.MustCompile(`^bitbucket\.org/(?P<owner>[^/]+)/(?P<repo>[^/]+)(?P<dir>/[a-z0-9A-Z_.\-/]*)?$`),
 		prefix:  "bitbucket.org/",
 		get:     getBitbucketDir,
 	})

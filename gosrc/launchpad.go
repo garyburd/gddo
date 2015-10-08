@@ -22,7 +22,7 @@ import (
 
 func init() {
 	addService(&service{
-		pattern: regexp.MustCompile(`^launchpad\.net/(?P<repo>(?P<project>[a-z0-9A-Z_.\-]+)(?P<series>/[a-z0-9A-Z_.\-]+)?|~[a-z0-9A-Z_.\-]+/(\+junk|[a-z0-9A-Z_.\-]+)/[a-z0-9A-Z_.\-]+)(?P<dir>/[a-z0-9A-Z_.\-/]+)*$`),
+-		pattern: regexp.MustCompile(`^launchpad\.net/(?P<repo>(?P<project>[^/]+)(?P<series>/[a-z0-9A-Z_.\-]+)?|~[a-z0-9A-Z_.\-]+/(\+junk|[a-z0-9A-Z_.\-]+)/[a-z0-9A-Z_.\-]+)(?P<dir>/[a-z0-9A-Z_.\-/]+)*$`),
 		prefix:  "launchpad.net/",
 		get:     getLaunchpadDir,
 	})

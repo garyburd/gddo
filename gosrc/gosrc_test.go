@@ -194,7 +194,7 @@ func (t testTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-var githubPattern = regexp.MustCompile(`^github\.com/(?P<owner>[a-z0-9A-Z_.\-]+)/(?P<repo>[a-z0-9A-Z_.\-]+)(?P<dir>/[a-z0-9A-Z_.\-/]*)?$`)
+var githubPattern = regexp.MustCompile(`^github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+)(?P<dir>/[a-z0-9A-Z_.\-/]*)?$`)
 
 func testGet(client *http.Client, match map[string]string, etag string) (*Directory, error) {
 	importPath := match["importPath"]

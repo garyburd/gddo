@@ -16,7 +16,7 @@ import (
 
 func init() {
 	addService(&service{
-		pattern:         regexp.MustCompile(`^code\.google\.com/(?P<pr>[pr])/(?P<repo>[a-z0-9\-]+)(:?\.(?P<subrepo>[a-z0-9\-]+))?(?P<dir>/[a-z0-9A-Z_.\-/]+)?$`),
+-		pattern:         regexp.MustCompile(`^code\.google\.com/(?P<pr>[pr])/(?P<repo>[a-z0-9\-]+)(:?\.(?P<subrepo>[a-z0-9\-]+))?(?P<dir>/[a-z0-9A-Z_.\-/]+)?$`),
 		prefix:          "code.google.com/",
 		get:             getGoogleDir,
 		getPresentation: getGooglePresentation,
