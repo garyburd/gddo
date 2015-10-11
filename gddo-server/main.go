@@ -211,15 +211,14 @@ func servePackage(resp http.ResponseWriter, req *http.Request) error {
 		p = p[len("/pkg"):]
 	}
 	//redirect repo on code.google.com/p/go.*
+	golangSubRepo := "default|example|empty|cryto|net|codereview|image|talks|blog|exp|text|tools|benchmarks|mobile|sys"
+	p = regexp.MustCompile(`^code\.google\.com/p/go\.((`+golangSubRepo+`)+.*)`).ReplaceAllString(p, "golang.org/x/$1")
 	redirctMap := map[string]string{
 		"code.google.com/p/go.talks/present":           "golang.org/x/tools/present",
-		"code.google.com/p/go.text/collate":            "golang.org/x/text/collate",
-		"code.google.com/p/go.text/unicode/norm":       "golang.org/x/unicode/norm",
-		"code.google.com/p/go.tools/cmd/cover":         "golang.org/x/tools/cmd/cover",
-		"code.google.com/p/go.tools/cmd/godoc":         "golang.org/x/tools/cmd/godoc",
 		"code.google.com/p/go.tools/godoc/static":      "golang.org/x/tools/playground/app/static",
 		"code.google.com/p/go.tools/playground":        "golang.org/x/playground",
 		"code.google.com/p/go.tools/playground/socket": "golang.org/x/playground",
+		"code.google.com/p/go.example":                 "github.com/golang/example",
 	}
 	if newURL, ok := redirctMap[strings.Trim(p, "/")]; ok {
 		p = newURL
