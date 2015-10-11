@@ -211,8 +211,6 @@ func servePackage(resp http.ResponseWriter, req *http.Request) error {
 		p = p[len("/pkg"):]
 	}
 	//redirect repo on code.google.com/p/go.*
-	golangSubRepo := "default|example|empty|cryto|net|codereview|image|talks|blog|exp|text|tools|benchmarks|mobile|sys"
-	p = regexp.MustCompile(`^code\.google\.com/p/go\.((`+golangSubRepo+`)+.*)`).ReplaceAllString(p, "golang.org/x/$1")
 	redirctMap := map[string]string{
 		"code.google.com/p/go.talks/present":           "golang.org/x/tools/present",
 		"code.google.com/p/go.tools/godoc/static":      "golang.org/x/tools/playground/app/static",
