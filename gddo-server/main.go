@@ -215,6 +215,22 @@ func servePackage(resp http.ResponseWriter, req *http.Request) error {
 		return nil
 	}
 
+	//redirect repo on code.google.com/p/go.*
+	redirctMap := map[string]string{
+		"code.google.com/p/go.talks/present":           "golang.org/x/tools/present",
+		"code.google.com/p/go.text/collate":            "golang.org/x/text/collate",
+		"code.google.com/p/go.text/unicode/norm":       "golang.org/x/unicode/norm",
+		"code.google.com/p/go.tools/cmd/cover":         "golang.org/x/tools/cmd/cover",
+		"code.google.com/p/go.tools/cmd/godoc":         "golang.org/x/tools/cmd/godoc",
+		"code.google.com/p/go.tools/godoc/static":      "golang.org/x/tools/playground/app/static",
+		"code.google.com/p/go.tools/playground":        "golang.org/x/playground",
+		"code.google.com/p/go.tools/playground/socket": "golang.org/x/playground",
+	}
+	if newURL, ok := redirctMap[strings.Trim(p, "/")]; ok {
+		http.Redirect(resp, req, "/"+newURL, http.StatusMovedPermanently)
+		return nil
+	}
+
 	if isView(req, "status.svg") {
 		statusImageHandlerSVG.ServeHTTP(resp, req)
 		return nil
