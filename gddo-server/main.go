@@ -212,6 +212,17 @@ func servePackage(resp http.ResponseWriter, req *http.Request) error {
 	if strings.HasPrefix(p, "/pkg/") {
 		p = p[len("/pkg"):]
 	}
+	//redirect repo on code.google.com/p/go.*
+	redirctMap := map[string]string{
+		"code.google.com/p/go.talks/present":           "golang.org/x/tools/present",
+		"code.google.com/p/go.tools/godoc/static":      "golang.org/x/tools/playground/app/static",
+		"code.google.com/p/go.tools/playground":        "golang.org/x/playground",
+		"code.google.com/p/go.tools/playground/socket": "golang.org/x/playground",
+		"code.google.com/p/go.example":                 "github.com/golang/example",
+	}
+	if newURL, ok := redirctMap[strings.Trim(p, "/")]; ok {
+		p = newURL
+	}
 	if p != req.URL.Path {
 		http.Redirect(resp, req, p, http.StatusMovedPermanently)
 		return nil
