@@ -242,6 +242,10 @@ func (b *builder) printDecl(decl ast.Decl) (d Code) {
 		return Code{Text: err.Error()}
 	}
 
+	return Code{Text: string(b.buf), Annotations: b.getCodeAnnotations(v.annotations), Paths: v.paths}
+}
+
+func (b *builder) getCodeAnnotations(sourceAnnotations []Annotation) []Annotation {
 	var annotations []Annotation
 	var s scanner.Scanner
 	fset := token.NewFileSet()
@@ -263,12 +267,12 @@ loop:
 				annotations = append(annotations, Annotation{Kind: CommentAnnotation, Pos: int32(p), End: int32(e)})
 			}
 		case token.IDENT:
-			if len(v.annotations) == 0 {
+			if len(sourceAnnotations) == 0 {
 				// Oops!
 				break loop
 			}
-			annotation := v.annotations[0]
-			v.annotations = v.annotations[1:]
+			annotation := sourceAnnotations[0]
+			sourceAnnotations = sourceAnnotations[1:]
 			if annotation.Kind == -1 {
 				continue
 			}
@@ -280,7 +284,7 @@ loop:
 		}
 		prevTok = tok
 	}
-	return Code{Text: string(b.buf), Annotations: annotations, Paths: v.paths}
+	return annotations
 }
 
 func (b *builder) position(n ast.Node) Pos {
@@ -301,7 +305,103 @@ func (b *builder) position(n ast.Node) Pos {
 	return position
 }
 
+// exampleVisitor collects annotations to the package's types, functions, and variables.
+type exampleVisitor struct {
+	annotations []Annotation
+	pkgName     string
+}
+
+func (v *exampleVisitor) add(kind AnnotationKind) {
+	v.annotations = append(v.annotations, Annotation{Kind: kind, PathIndex: -1})
+}
+
+func (v *exampleVisitor) ignoreName() {
+	v.add(-1)
+}
+
+func (v *exampleVisitor) Visit(n ast.Node) ast.Visitor {
+	switch n := n.(type) {
+	case *ast.TypeSpec:
+		v.ignoreName()
+		switch n := n.Type.(type) {
+		case *ast.InterfaceType:
+			for _, f := range n.Methods.List {
+				v.ignoreName()
+				ast.Walk(v, f.Type)
+			}
+		case *ast.StructType:
+			for _, f := range n.Fields.List {
+				v.ignoreName()
+				ast.Walk(v, f.Type)
+			}
+		default:
+			ast.Walk(v, n)
+		}
+	case *ast.FuncDecl:
+		if n.Recv != nil {
+			ast.Walk(v, n.Recv)
+		}
+		v.ignoreName()
+		ast.Walk(v, n.Type)
+		if n.Body != nil {
+			for _, s := range n.Body.List {
+				ast.Walk(v, s)
+			}
+		}
+	case *ast.Field:
+		for _ = range n.Names {
+			v.ignoreName()
+		}
+		ast.Walk(v, n.Type)
+	case *ast.ValueSpec:
+		for _ = range n.Names {
+			v.ignoreName()
+		}
+
+		if n.Type != nil {
+			ast.Walk(v, n.Type)
+		}
+
+		for _, x := range n.Values {
+			ast.Walk(v, x)
+		}
+	case *ast.Ident:
+		switch {
+		case n.Obj != nil && ast.IsExported(n.Name):
+			v.add(LinkAnnotation)
+		default:
+			v.ignoreName()
+		}
+	case *ast.SelectorExpr:
+		if x, _ := n.X.(*ast.Ident); x != nil {
+			if x.Obj == nil && ast.IsExported(n.Sel.Name) && x.Name == v.pkgName {
+				v.ignoreName()
+				v.add(LinkAnnotation)
+				return nil
+			}
+		}
+		if x, _ := n.X.(*ast.Ident); x != nil {
+			if obj := x.Obj; obj != nil && obj.Kind == ast.Pkg {
+				if spec, _ := obj.Decl.(*ast.ImportSpec); spec != nil {
+					if _, err := strconv.Unquote(spec.Path.Value); err == nil {
+						v.ignoreName()
+						v.ignoreName()
+						return nil
+					}
+				}
+			}
+		}
+		ast.Walk(v, n.X)
+		v.ignoreName()
+	default:
+		return v
+	}
+	return nil
+}
+
 func (b *builder) printExample(e *doc.Example) (code Code, output string) {
+	v := &exampleVisitor{pkgName: b.pkgName}
+	ast.Walk(v, e.Code)
 	output = e.Output
 
 	b.buf = b.buf[:0]
@@ -331,29 +431,5 @@ func (b *builder) printExample(e *doc.Example) (code Code, output string) {
 		output = ""
 	}
 
-	var annotations []Annotation
-	var s scanner.Scanner
-	fset := token.NewFileSet()
-	file := fset.AddFile("", fset.Base(), len(b.buf))
-	s.Init(file, b.buf, nil, scanner.ScanComments)
-	prevTok := token.ILLEGAL
-scanLoop:
-	for {
-		pos, tok, lit := s.Scan()
-		switch tok {
-		case token.EOF:
-			break scanLoop
-		case token.COMMENT:
-			p := file.Offset(pos)
-			e := p + len(lit)
-			if prevTok == token.COMMENT {
-				annotations[len(annotations)-1].End = int32(e)
-			} else {
-				annotations = append(annotations, Annotation{Kind: CommentAnnotation, Pos: int32(p), End: int32(e)})
-			}
-		}
-		prevTok = tok
-	}
-
-	return Code{Text: string(b.buf), Annotations: annotations}, output
+	return Code{Text: string(b.buf), Annotations: b.getCodeAnnotations(v.annotations)}, output
 }

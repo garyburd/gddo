@@ -145,6 +145,7 @@ func removeAssociations(dpkg *doc.Package) {
 
 // builder holds the state used when building the documentation.
 type builder struct {
+	pkgName  string
 	srcs     map[string]*source
 	fset     *token.FileSet
 	examples []*doc.Example
@@ -499,6 +500,7 @@ func newPackage(dir *gosrc.Directory) (*Package, error) {
 	}
 
 	var b builder
+
 	b.srcs = make(map[string]*source)
 	references := make(map[string]bool)
 	for _, file := range dir.Files {
@@ -606,6 +608,7 @@ func newPackage(dir *gosrc.Directory) (*Package, error) {
 		removeAssociations(dpkg)
 	}
 
+	b.pkgName = dpkg.Name
 	pkg.Name = dpkg.Name
 	pkg.Doc = strings.TrimRight(dpkg.Doc, " \t\n\r")
 	pkg.Synopsis = synopsis(pkg.Doc)
