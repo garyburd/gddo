@@ -21,7 +21,7 @@ func isStandardPackage(path string) bool {
 }
 
 func isTermSep(r rune) bool {
-	return unicode.IsSpace(r) || unicode.IsPunct(r) || unicode.IsSymbol(r)
+	return unicode.IsSpace(r) || unicode.IsPunct(r) && r != '.' || unicode.IsSymbol(r)
 }
 
 func normalizeProjectRoot(projectRoot string) string {
@@ -43,7 +43,7 @@ func term(s string) string {
 	if x, ok := synonyms[s]; ok {
 		s = x
 	}
-	return stem(s)
+	return stem(strings.Trim(s, "."))
 }
 
 var httpPat = regexp.MustCompile(`https?://\S+`)
@@ -125,11 +125,10 @@ func documentTerms(pdoc *doc.Package, score float64) []string {
 
 	if score > 0 {
 
-		if isStandardPackage(pdoc.ImportPath) {
-			for _, term := range parseQuery(pdoc.ImportPath) {
-				terms[term] = true
-			}
-		} else {
+		for _, term := range parseQuery(pdoc.ImportPath) {
+			terms[term] = true
+		}
+		if !isStandardPackage(pdoc.ImportPath) {
 			terms["all:"] = true
 			for _, term := range parseQuery(pdoc.ProjectName) {
 				terms[term] = true
