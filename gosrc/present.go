@@ -7,6 +7,7 @@
 package gosrc
 
 import (
+	"path/filepath"
 	"regexp"
 	"time"
 )
@@ -40,6 +41,7 @@ func (b *presBuilder) build() (*Presentation, error) {
 			// TODO: sanitize and fix relative URLs in HTML.
 			data = append(data, "\nERROR: .html not supported\n"...)
 		case "play", "code":
+			name = filepath.Clean(name)
 			data = append(data, b.data[i:m[5]]...)
 			found := false
 			for _, n := range fnames {
