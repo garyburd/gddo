@@ -19,16 +19,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/gddo/gosrc"
+	"github.com/golang/gddo/httputil"
+	"github.com/golang/lint"
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/urlfetch"
-
-	"github.com/golang/gddo/gosrc"
-	"github.com/golang/gddo/httputil"
-
-	"github.com/golang/lint"
 )
 
 func init() {
@@ -113,11 +111,11 @@ func writeErrorResponse(w http.ResponseWriter, status int) error {
 func httpClient(r *http.Request) *http.Client {
 	c := appengine.NewContext(r)
 	return &http.Client{
-		Transport: &httputil.Transport{
+		Transport: &httputil.AuthTransport{
 			Token:        github.Token,
 			ClientID:     github.ClientID,
 			ClientSecret: github.ClientSecret,
-			Base:         &urlfetch.Transport{Context: c, Deadline: 10 * time.Second},
+			Base:         &urlfetch.Transport{Context: c},
 			UserAgent:    fmt.Sprintf("%s (+http://%s/-/bot)", appengine.AppID(c), r.Host),
 		},
 	}
