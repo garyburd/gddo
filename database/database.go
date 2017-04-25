@@ -53,6 +53,7 @@ import (
 
 	"github.com/golang/gddo/doc"
 	"github.com/golang/gddo/gosrc"
+	"github.com/golang/snappy"
 )
 
 type Database struct {
