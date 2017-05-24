@@ -38,6 +38,11 @@ type StaticServer struct {
 	// is nil, then http.Error is used to generate error responses.
 	Error Error
 
+	// When development mode is true, ETags will be recalculated on every request.
+	// This allows for page modification and reload without restarting or reallocating
+	// the static server
+	DevelopmentMode bool
+
 	// MIMETypes is a map from file extensions to MIME types.
 	MIMETypes map[string]string
 
@@ -182,7 +187,7 @@ func (h *staticHandler) etag(p string) (string, error) {
 	etag := h.ss.etags[id]
 	h.ss.mu.Unlock()
 
-	if etag != "" {
+	if !h.ss.DevelopmentMode && etag != "" {
 		return etag, nil
 	}
 
