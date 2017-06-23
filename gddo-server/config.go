@@ -66,7 +66,7 @@ func init() {
 		panic(err)
 	}
 
-	// Also fetch from enviorment
+	// Also fetch from environment
 	viper.SetEnvPrefix("gddo")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
