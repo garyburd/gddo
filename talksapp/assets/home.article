@@ -16,6 +16,9 @@ The syntax for URLs is:
     http://go-talks.appspot.com/github.com/owner/project/file.ext
     http://go-talks.appspot.com/github.com/owner/project/sub/directory/file.ext
 
+The files will be cached for an hour, so if you make any changes and the slides or articles are not updated,
+please just wait for another hour until it gets updated.
+
 The supported file extensions (.ext) are .slide and .article.
 
 The .html command is not supported.
