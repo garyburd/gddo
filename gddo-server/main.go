@@ -275,7 +275,7 @@ func (s *server) servePackage(resp http.ResponseWriter, req *http.Request) error
 	switch {
 	case isView(req, "imports"):
 		if pdoc.Name == "" {
-			break
+			return &httpError{status: http.StatusNotFound}
 		}
 		pkgs, err = s.db.Packages(pdoc.Imports)
 		if err != nil {
@@ -298,7 +298,7 @@ func (s *server) servePackage(resp http.ResponseWriter, req *http.Request) error
 		})
 	case isView(req, "importers"):
 		if pdoc.Name == "" {
-			break
+			return &httpError{status: http.StatusNotFound}
 		}
 		pkgs, err = s.db.Importers(importPath)
 		if err != nil {
@@ -319,7 +319,7 @@ func (s *server) servePackage(resp http.ResponseWriter, req *http.Request) error
 			return &httpError{status: http.StatusForbidden}
 		}
 		if pdoc.Name == "" {
-			break
+			return &httpError{status: http.StatusNotFound}
 		}
 		hide := database.ShowAllDeps
 		switch req.Form.Get("hide") {
@@ -368,6 +368,7 @@ func (s *server) servePackage(resp http.ResponseWriter, req *http.Request) error
 			http.Redirect(resp, req, u.String(), http.StatusMovedPermanently)
 			return nil
 		}
+		return &httpError{status: http.StatusNotFound}
 	default:
 		importerCount := 0
 		if pdoc.Name != "" {
@@ -413,7 +414,6 @@ func (s *server) servePackage(resp http.ResponseWriter, req *http.Request) error
 			"importerCount": importerCount,
 		})
 	}
-	return &httpError{status: http.StatusNotFound}
 }
 
 func (s *server) serveRefresh(resp http.ResponseWriter, req *http.Request) error {
