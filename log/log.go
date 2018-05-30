@@ -15,6 +15,25 @@ const (
 	loggerKey
 )
 
+func init() {
+	// Set the log level via the GODOC_LOG_LEVEL environment variable.
+	// Valid values can be found in the code for log15.LvlFromString,
+	// but include the standard "debug", "info", "warn", "error", and
+	// "crit" (critical).
+	//
+	// This only sets the Root logger on the log15 package. If the context
+	// contains a logger, then this environment variable will not affect
+	// log level.
+	//
+	// If the GODOC_LOG_LEVEL env var is blank, then we do nothing.
+	if logLevelStr := os.Getenv("GODOC_LOG_LEVEL"); logLevelStr != "" {
+		logLevel, _ := log15.LvlFromString(logLevelStr)
+		log15.Root().SetHandler(
+			log15.LvlFilterHandler(logLevel, log15.StdoutHandler),
+		)
+	}
+}
+
 // FromContext always returns a logger. If there is no logger in the context, it
 // returns the root logger. It is not recommended for use and may be removed in
 // the future.
