@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/golang/gddo",
-	"GoVersion": "go1.9",
+	"GoVersion": "go1.10",
 	"GodepVersion": "v80",
 	"Packages": [
 		"./..."
@@ -317,18 +317,22 @@
 		},
 		{
 			"ImportPath": "golang.org/x/text/secure/bidirule",
+			"Comment": "v0.1.0-6-g1cbadb4",
 			"Rev": "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
 		},
 		{
 			"ImportPath": "golang.org/x/text/transform",
+			"Comment": "v0.1.0-6-g1cbadb4",
 			"Rev": "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
 		},
 		{
 			"ImportPath": "golang.org/x/text/unicode/bidi",
+			"Comment": "v0.1.0-6-g1cbadb4",
 			"Rev": "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
 		},
 		{
 			"ImportPath": "golang.org/x/text/unicode/norm",
+			"Comment": "v0.1.0-6-g1cbadb4",
 			"Rev": "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
 		},
 		{
@@ -337,15 +341,15 @@
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/gcexportdata",
-			"Rev": "e531a2a1c15f94033f6fa87666caeb19a688175f"
+			"Rev": "a5b4c53f6e8bdcafa95a94671bf2d1203365858b"
 		},
 		{
-			"ImportPath": "golang.org/x/tools/go/gcimporter15",
-			"Rev": "e531a2a1c15f94033f6fa87666caeb19a688175f"
+			"ImportPath": "golang.org/x/tools/go/internal/gcimporter",
+			"Rev": "a5b4c53f6e8bdcafa95a94671bf2d1203365858b"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/present",
-			"Rev": "e531a2a1c15f94033f6fa87666caeb19a688175f"
+			"Rev": "a5b4c53f6e8bdcafa95a94671bf2d1203365858b"
 		},
 		{
 			"ImportPath": "google.golang.org/api/cloudtrace/v1",
