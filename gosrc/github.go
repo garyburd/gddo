@@ -126,8 +126,10 @@ func getGitHubDir(ctx context.Context, client *http.Client, match map[string]str
 		return nil, NotFoundError{Message: "No files in directory."}
 	}
 
-	if err := validateGitHubProjectName(contents[0].GitURL, match); err != nil {
-		return nil, err
+	canonical := expand("github.com/{owner}/{repo}", match)
+	m := ownerRepoPat.FindStringSubmatch(contents[0].GitURL)
+	if m != nil {
+		canonical = "github.com/" + m[1]
 	}
 
 	var files []*File
@@ -158,6 +160,7 @@ func getGitHubDir(ctx context.Context, client *http.Client, match map[string]str
 	}
 
 	return &Directory{
+		CanonicalPath:  canonical,
 		BrowseURL:      browseURL,
 		Etag:           commits[0].ID,
 		Files:          files,
@@ -171,28 +174,6 @@ func getGitHubDir(ctx context.Context, client *http.Client, match map[string]str
 		Fork:           repo.Fork,
 		Stars:          repo.Stars,
 	}, nil
-}
-
-// validateGitHubProjectName checks if the requested owner and repo names match
-// the case of the canonical names returned by Github. GitHub owner and repo names
-// are case-insensitive so they must be normalized to the canonical casing.
-//
-// Returns a not found error if the names are the same, but have different case.
-// Returns nil if the names match exactly, or if the names are different,
-// which will happen if the url is a github redirect to a new project name.
-func validateGitHubProjectName(canonicalName string, requestMatch map[string]string) error {
-	m := ownerRepoPat.FindStringSubmatch(canonicalName)
-	if m == nil {
-		return nil
-	}
-	requestedName := requestMatch["owner"] + "/" + requestMatch["repo"]
-	if m[1] == requestedName || !strings.EqualFold(m[1], requestedName) {
-		return nil
-	}
-	return NotFoundError{
-		Message:  "Github import path has incorrect case.",
-		Redirect: fmt.Sprintf("github.com/%s%s", m[1], requestMatch["dir"]),
-	}
 }
 
 // isQuickFork reports whether the repository is a "quick fork":

@@ -49,6 +49,10 @@ const (
 
 // Directory describes a directory on a version control service.
 type Directory struct {
+	// Canonical path as reported by the server (may be different from canonical
+	// import path enforced by import comment!)
+	CanonicalPath string
+
 	// The import path for this package.
 	ImportPath string
 

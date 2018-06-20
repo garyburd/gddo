@@ -576,10 +576,19 @@ func newPackage(dir *gosrc.Directory) (*Package, error) {
 		return pkg, nil
 	}
 
-	if bpkg.ImportComment != "" && bpkg.ImportComment != dir.ImportPath {
-		return nil, gosrc.NotFoundError{
-			Message:  "not at canonical import path",
-			Redirect: bpkg.ImportComment,
+	if bpkg.ImportComment == "" {
+		if dir.CanonicalPath != "" && dir.ImportPath != dir.CanonicalPath {
+			return nil, gosrc.NotFoundError{
+				Message:  "not at canonical import path",
+				Redirect: dir.CanonicalPath,
+			}
+		}
+	} else {
+		if bpkg.ImportComment != dir.ImportPath {
+			return nil, gosrc.NotFoundError{
+				Message:  "not at canonical import path",
+				Redirect: bpkg.ImportComment,
+			}
 		}
 	}
 
