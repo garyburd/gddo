@@ -36,7 +36,6 @@ func init() {
 var (
 	gitHubRawHeader     = http.Header{"Accept": {"application/vnd.github-blob.raw"}}
 	gitHubPreviewHeader = http.Header{"Accept": {"application/vnd.github.preview"}}
-	ownerRepoPat        = regexp.MustCompile(`^https://api.github.com/repos/([^/]+/[^/]+)/`)
 )
 
 type githubCommit struct {
