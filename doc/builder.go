@@ -579,7 +579,7 @@ func newPackage(dir *gosrc.Directory) (*Package, error) {
 	switch {
 	case bpkg.ImportComment != "":
 		// Redirect to import path comment.
-		if bpkg.ImportComment != dir.ImportPath {
+		if dir.ImportPath != bpkg.ImportComment {
 			return nil, gosrc.NotFoundError{
 				Message:  "not at canonical import path",
 				Redirect: bpkg.ImportComment,
