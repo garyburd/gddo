@@ -63,6 +63,7 @@ func getGitHubDir(ctx context.Context, client *http.Client, match map[string]str
 	c := &httpClient{client: client, errFn: gitHubError}
 
 	var repo struct {
+		FullName      string    `json:"full_name"`
 		Fork          bool      `json:"fork"`
 		Stars         int       `json:"stargazers_count"`
 		CreatedAt     time.Time `json:"created_at"`
@@ -126,12 +127,6 @@ func getGitHubDir(ctx context.Context, client *http.Client, match map[string]str
 		return nil, NotFoundError{Message: "No files in directory."}
 	}
 
-	canonical := expand("github.com/{owner}/{repo}", match)
-	m := ownerRepoPat.FindStringSubmatch(contents[0].GitURL)
-	if m != nil {
-		canonical = "github.com/" + m[1]
-	}
-
 	var files []*File
 	var dataURLs []string
 	var subdirs []string
@@ -160,19 +155,19 @@ func getGitHubDir(ctx context.Context, client *http.Client, match map[string]str
 	}
 
 	return &Directory{
-		CanonicalPath:  canonical,
-		BrowseURL:      browseURL,
-		Etag:           commits[0].ID,
-		Files:          files,
-		LineFmt:        "%s#L%d",
-		ProjectName:    match["repo"],
-		ProjectRoot:    expand("github.com/{owner}/{repo}", match),
-		ProjectURL:     expand("https://github.com/{owner}/{repo}", match),
-		Subdirectories: subdirs,
-		VCS:            "git",
-		Status:         status,
-		Fork:           repo.Fork,
-		Stars:          repo.Stars,
+		ResolvedGitHubPath: "github.com/" + repo.FullName + match["dir"],
+		BrowseURL:          browseURL,
+		Etag:               commits[0].ID,
+		Files:              files,
+		LineFmt:            "%s#L%d",
+		ProjectName:        match["repo"],
+		ProjectRoot:        expand("github.com/{owner}/{repo}", match),
+		ProjectURL:         expand("https://github.com/{owner}/{repo}", match),
+		Subdirectories:     subdirs,
+		VCS:                "git",
+		Status:             status,
+		Fork:               repo.Fork,
+		Stars:              repo.Stars,
 	}, nil
 }
 

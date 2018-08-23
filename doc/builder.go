@@ -576,18 +576,22 @@ func newPackage(dir *gosrc.Directory) (*Package, error) {
 		return pkg, nil
 	}
 
-	if bpkg.ImportComment == "" {
-		if dir.CanonicalPath != "" && dir.ImportPath != dir.CanonicalPath {
-			return nil, gosrc.NotFoundError{
-				Message:  "not at canonical import path",
-				Redirect: dir.CanonicalPath,
-			}
-		}
-	} else {
+	switch {
+	case bpkg.ImportComment != "":
+		// Redirect to import path comment.
 		if bpkg.ImportComment != dir.ImportPath {
 			return nil, gosrc.NotFoundError{
 				Message:  "not at canonical import path",
 				Redirect: bpkg.ImportComment,
+			}
+		}
+	case bpkg.ImportComment == "" && dir.ResolvedGitHubPath != "":
+		// Make sure to redirect to GitHub's reported canonical casing when
+		// there's no import path comment.
+		if dir.ImportPath != dir.ResolvedGitHubPath {
+			return nil, gosrc.NotFoundError{
+				Message:  "not at canonical import path",
+				Redirect: dir.ResolvedGitHubPath,
 			}
 		}
 	}
