@@ -30,7 +30,14 @@ func IsValidRemotePath(importPath string) bool {
 		return false
 	}
 
-	if !validHost.MatchString(parts[0]) {
+	// use only the hostname, if there is a username in the package name
+	hostparts := strings.Split(parts[0], "@")
+	host := hostparts[0]
+	if len(hostparts) > 1 {
+		host = hostparts[1]
+	}
+
+	if !validHost.MatchString(host) {
 		return false
 	}
 
