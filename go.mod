@@ -30,13 +30,9 @@ require (
 	github.com/spf13/pflag v0.0.0-20170901120850-7aff26db30c1
 	github.com/spf13/viper v1.0.0
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/net v0.0.0-20170920234330-b60f3a92103d // indirect
 	golang.org/x/oauth2 v0.0.0-20170912212905-13449ad91cb2
-	golang.org/x/sync v0.0.0-20170517211232-f52d1811a629 // indirect
-	golang.org/x/sys v0.0.0-20170921191643-2320a9c15898 // indirect
-	golang.org/x/text v0.0.0-20170915090833-1cbadb444a80 // indirect
 	golang.org/x/time v0.0.0-20170424234030-8be79e1e0910 // indirect
-	golang.org/x/tools v0.0.0-20180525024113-a5b4c53f6e8b
+	golang.org/x/tools v0.0.0-20190521203540-521d6ed310dd
 	google.golang.org/api v0.0.0-20170921000349-586095a6e407 // indirect
 	google.golang.org/appengine v0.0.0-20170921170648-24e4144ec923
 	google.golang.org/genproto v0.0.0-20170918111702-1e559d0a00ee // indirect

@@ -1,6 +1,5 @@
 #!/bin/sh
-go get golang.org/x/tools/cmd/present
-go get golang.org/x/tools/godoc
+go mod download
 present=`go list -f '{{.Dir}}' golang.org/x/tools/cmd/present`
 godoc=`go list -f '{{.Dir}}' golang.org/x/tools/godoc`
 mkdir -p present
