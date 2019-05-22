@@ -1,5 +1,5 @@
 #!/bin/sh
-go mod download
+go mod download # ensure required tools are downloaded so the following go list's work
 present=`go list -f '{{.Dir}}' golang.org/x/tools/cmd/present`
 godoc=`go list -f '{{.Dir}}' golang.org/x/tools/godoc`
 mkdir -p present

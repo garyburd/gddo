@@ -15,7 +15,7 @@ services:
 before_script:
   - export PATH=$PATH:"$HOME/go_appengine"
 script:
-  - go test -v $(go list ./... | grep -v '/vendor\|gae-service-proxy\|talksapp\|lintapp')
+  - go test -v ./...
   - pushd talksapp
   - ./setup.sh
   - goapp test -v .
