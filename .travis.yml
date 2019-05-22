@@ -17,7 +17,7 @@ services:
 before_script:
   - export PATH=$PATH:"$HOME/go_appengine"
 script:
-  - go test -v ./...
+  - go test -v $(go list ./... | grep -v 'talksapp')
   - pushd talksapp
   - ./setup.sh
   - goapp test -v .
