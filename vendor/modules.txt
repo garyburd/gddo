@@ -18,8 +18,6 @@ github.com/garyburd/redigo/redis
 github.com/garyburd/redigo/internal
 # github.com/go-stack/stack v1.6.0
 github.com/go-stack/stack
-# github.com/golang/lint v0.0.0-20170918230701-e5d664eb928e
-github.com/golang/lint
 # github.com/golang/protobuf v0.0.0-20170920220647-130e6b02ab05
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/ptypes
@@ -75,6 +73,8 @@ github.com/spf13/jwalterweatherman
 github.com/spf13/pflag
 # github.com/spf13/viper v1.0.0
 github.com/spf13/viper
+# golang.org/x/lint v0.0.0-20190409202823-959b441ac422
+golang.org/x/lint
 # golang.org/x/net v0.0.0-20190311183353-d8887717615a
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -115,6 +115,7 @@ golang.org/x/tools/godoc/golangorgenv
 golang.org/x/tools/godoc/util
 golang.org/x/tools/godoc/vfs
 golang.org/x/tools/godoc/vfs/httpfs
+golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/gcexportdata
 golang.org/x/tools/go/callgraph
 golang.org/x/tools/go/loader
@@ -123,7 +124,6 @@ golang.org/x/tools/go/ssa
 golang.org/x/tools/go/ssa/ssautil
 golang.org/x/tools/go/types/typeutil
 golang.org/x/tools/go/internal/gcimporter
-golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/buildutil
 golang.org/x/tools/go/internal/cgo
 golang.org/x/tools/container/intsets

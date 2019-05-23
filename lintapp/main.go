@@ -28,7 +28,7 @@ import (
 	"github.com/golang/gddo/gosrc"
 	"github.com/golang/gddo/httputil"
 
-	"github.com/golang/lint"
+	"golang.org/x/lint"
 )
 
 func init() {

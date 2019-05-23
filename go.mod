@@ -10,7 +10,6 @@ require (
 	github.com/fsnotify/fsnotify v0.0.0-20170329110642-4da3e2cfbabc // indirect
 	github.com/garyburd/redigo v0.0.0-20170914051019-70e1b1943d4f
 	github.com/go-stack/stack v1.6.0 // indirect
-	github.com/golang/lint v0.0.0-20170918230701-e5d664eb928e
 	github.com/golang/protobuf v0.0.0-20170920220647-130e6b02ab05 // indirect
 	github.com/golang/snappy v0.0.0-20170215233205-553a64147049
 	github.com/google/go-cmp v0.0.0-20171103154506-982329095285
@@ -30,6 +29,7 @@ require (
 	github.com/spf13/pflag v0.0.0-20170901120850-7aff26db30c1
 	github.com/spf13/viper v1.0.0
 	github.com/stretchr/testify v1.3.0 // indirect
+	golang.org/x/lint v0.0.0-20190409202823-959b441ac422
 	golang.org/x/oauth2 v0.0.0-20170912212905-13449ad91cb2
 	golang.org/x/time v0.0.0-20170424234030-8be79e1e0910 // indirect
 	golang.org/x/tools v0.0.0-20190521203540-521d6ed310dd
