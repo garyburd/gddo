@@ -125,6 +125,8 @@ func newDBDialer(server string, logConn bool) func() (c redis.Conn, err error) {
 func newRemoteClient(host string) (*remote_api.Client, error) {
 	client, err := google.DefaultClient(context.TODO(),
 		"https://www.googleapis.com/auth/appengine.apis",
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/cloud-platform",
 	)
 	if err != nil {
 		return nil, err
