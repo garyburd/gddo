@@ -1,12 +1,63 @@
-html { background-color: whitesmoke; }
-body { background-color: white; }
+:root {
+    --html-background-color: whitesmoke;
+    --main-background-color: white;
+    --main-color: black;
+    --projnav-background-color: #eee;
+    --footer-background-color: #eee;
+    --highlighted-background-color: #FDFF9E;
+    --pkg-info-border-top: #ccc;
+    --code-color: #222;
+    --pre-color: #222;
+    --pre-com-color: #006600;
+    --decl-a-border: #ccc;
+    --decl-a-hover-background-color: white;
+    --navbar-brand-color: #375eab;
+    --navbar-footer-bg-color: hsl(209, 51%, 92%);
+    --navbar-footer-border-color: hsl(209, 51%, 88%);
+    --navbar-a-background-color: hsl(209, 51%, 88%);
+    --navbar-li-color: #000;
+    --panel-default-heading-color: #333;
+    --a-uses-color: #666;
+    --jumbotron-bg-color: #eeeeee;
+    --pre-bg-color: #f5f5f5;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --html-background-color: #101010;
+        --main-background-color: #000;
+        --main-color: #fefefe;
+        --projnav-background-color: #111;
+        --footer-background-color: #111;
+        --highlighted-background-color: #c8a154;
+        --pkg-info-border-top: #333;
+        --code-color: #ddd;
+        --pre-color: #ddd;
+        --pre-com-color: #99a9ff;
+        --decl-a-border: #333;
+        --decl-a-hover-background-color: black;
+        --navbar-brand-color: #547bc8;
+        --navbar-footer-bg-color: #0a141e;
+        --navbar-footer-border-color: #0f1f2f;
+        --navbar-a-background-color: #0f1f2f;
+        --navbar-li-color: #fff;
+        --panel-default-heading-color: #ccc;
+        --a-uses-color: #333;
+        --jumbotron-bg-color: #111111;
+        --pre-bg-color: #0a0a0a;
+        --panel-bg-color: #000000;
+    }
+}
+
+html { background-color: var(--html-background-color); }
+body { background-color: var(--main-background-color); color: var(--main-color)}
 h4 { margin-top: 20px; }
 .container { max-width: 728px; }
 
 #x-projnav {
     min-height: 20px;
     margin-bottom: 20px;
-    background-color: #eee;
+    background-color: var(--projnav-background-color);
     padding: 9px;
     border-radius: 3px;
 }
@@ -15,19 +66,19 @@ h4 { margin-top: 20px; }
     padding-top: 14px;
     padding-bottom: 15px;
     margin-top: 5px;
-    background-color: #eee;
+    background-color:  var(--footer-background-color);
     border-top-style: solid;
     border-top-width: 1px;
 
 }
 
 .highlighted {
-    background-color: #FDFF9E;
+    background-color: var(--highlighted-background-color);
 }
 
 #x-pkginfo {
     margin-top: 25px;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid var(--pkg-info-border-top);
     padding-top: 20px;
     margin-bottom: 15px;
 }
@@ -35,12 +86,12 @@ h4 { margin-top: 20px; }
 code {
     background-color: inherit;
     border: none;
-    color: #222;
+    color: var(--code-color);
     padding: 0;
 }
 
 pre {
-    color: #222;
+    color: var(--pre-color);
     overflow: auto;
     white-space: pre;
     word-break: normal;
@@ -54,7 +105,7 @@ pre {
 }
 
 pre .com {
-    color: #006600;
+    color: var(--pre-com-color);
 }
 
 .decl {
@@ -66,7 +117,7 @@ pre .com {
     top: 0px;
     right: 0px;
     display: none;
-    border: 1px solid #ccc;
+    border: 1px solid var(--decl-a-border);
     border-top-right-radius: 4px;
     border-bottom-left-radius: 4px;
     padding-left: 4px;
@@ -74,7 +125,7 @@ pre .com {
 }
 
 .decl > a:hover {
-    background-color: white;
+    background-color: var(--decl-a-hover-background-color);
     text-decoration: none;
 }
 
@@ -83,27 +134,31 @@ pre .com {
 }
 
 a, .navbar-default .navbar-brand {
-    color: #375eab;
+    color: var(--navbar-brand-color);
 }
 
 .navbar-default, #x-footer {
-    background-color: hsl(209, 51%, 92%);
-    border-color: hsl(209, 51%, 88%);
+    background-color: var(--navbar-footer-bg-color);
+    border-color: var(--navbar-footer-border-color);
 }
 
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-    background-color: hsl(209, 51%, 88%);
+    background-color: var(--navbar-a-background-color);
 }
 
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
-    color: #000;
+    color: var(--navbar-li-color);
+}
+
+.panel-group > * {
+    background-color: transparent;
 }
 
 .panel-default > .panel-heading {
-    color: #333;
+    color: var(--panel-default-heading-color);
     background-color: transparent;
 }
 
@@ -113,7 +168,7 @@ a.permalink {
 
 a.uses {
     display: none;
-    color: #666;
+    color: var(--a-uses-color);
     font-size: 0.8em;
 }
 
@@ -136,4 +191,12 @@ h1:hover .permalink, h2:hover .permalink, h3:hover .permalink, h4:hover .permali
     opacity: 0.54;
     text-transform: uppercase;
     font-size: 0.75em;
+}
+
+.jumbotron {
+    background-color: var(--jumbotron-bg-color);
+}
+
+pre {
+    background-color: var(--pre-bg-color);
 }

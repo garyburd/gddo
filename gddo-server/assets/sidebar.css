@@ -1,9 +1,27 @@
+:root {
+    --section-header-border-bottom: #eeeeee;
+    --sidebar-text-shadow: #fff;
+    --sidebar-nav-li-a-color: #716b7a;
+    --sidebar-nav-li-a-bg-color-hover: #e5e3e9;
+    --sidebar-nav-li-a-color-hover: #563d7c;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --section-header-border-bottom: #111111;
+        --sidebar-text-shadow: #000000;
+        --sidebar-nav-li-a-color: #8b8594;
+        --sidebar-nav-li-a-bg-color-hover: #17151c;
+        --sidebar-nav-li-a-color-hover: #83b3c2;
+    }
+}
+
 .container { max-width: 970px; }
 
 .section-header {
     padding-bottom: 4px;
     margin: 20px 0 10px;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid var(--section-header-border-bottom);
 }
 
 /* Sidebar navigation (copied from bootstrap docs.css) */
@@ -12,7 +30,7 @@
     margin-top: 5px;
     margin-bottom: 30px;
     padding-bottom: 10px;
-    text-shadow: 0 1px 0 #fff;
+    text-shadow: 0 1px 0 var(--sidebar-text-shadow);
     border-radius: 5px;
 }
 
@@ -29,19 +47,19 @@
 /* All levels of nav */
 .gddo-sidebar .nav > li > a {
     display: block;
-    color: #716b7a;
+    color: var(--sidebar-nav-li-a-color);
     padding: 5px 0px;
 }
 .gddo-sidebar .nav > li > a:hover,
 .gddo-sidebar .nav > li > a:focus {
     text-decoration: none;
-    background-color: #e5e3e9;
+    background-color: var(--sidebar-nav-li-a-bg-color-hover);
 }
 .gddo-sidebar .nav > .active > a,
 .gddo-sidebar .nav > .active:hover > a,
 .gddo-sidebar .nav > .active:focus > a {
     font-weight: bold;
-    color: #563d7c;
+    color: var(--sidebar-nav-li-a-color-hover);
     background-color: transparent;
 }
 
