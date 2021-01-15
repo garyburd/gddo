@@ -26,6 +26,14 @@ func FromContext(ctx context.Context) log15.Logger {
 	return log15.Root()
 }
 
+func SetLevel(level string) {
+	root := log15.Root()
+	lvl, err := log15.LvlFromString(level)
+	if err != nil {
+		root.SetHandler(log15.LvlFilterHandler(lvl, root.GetHandler()))
+	}
+}
+
 // NewContext creates a new context containing the given logger. It is not
 // recommended for use and may be removed in the future.
 func NewContext(ctx context.Context, l log15.Logger) context.Context {

@@ -23,6 +23,7 @@ const (
 	githubTokenEnvVar        = "GITHUB_TOKEN"
 	githubClientIDEnvVar     = "GITHUB_CLIENT_ID"
 	githubClientSecretEnvVar = "GITHUB_CLIENT_SECRET"
+	logLevelEnvVar           = "LOG_LEVEL"
 )
 
 const (
@@ -68,6 +69,9 @@ const (
 
 	// Pub/Sub Config
 	ConfigCrawlPubSubTopic = "crawl-events"
+
+	// Log Config
+	ConfigLogLevel = "log-level"
 )
 
 func loadConfig(ctx context.Context, args []string) (*viper.Viper, error) {
@@ -111,6 +115,7 @@ func loadConfig(ctx context.Context, args []string) (*viper.Viper, error) {
 	v.BindEnv(ConfigGithubToken, githubTokenEnvVar)
 	v.BindEnv(ConfigGithubClientID, githubClientIDEnvVar)
 	v.BindEnv(ConfigGithubClientSecret, githubClientSecretEnvVar)
+	v.BindEnv(ConfigLogLevel, logLevelEnvVar)
 
 	// Read from config.
 	if err := readViperConfig(ctx, v); err != nil {
@@ -119,6 +124,8 @@ func loadConfig(ctx context.Context, args []string) (*viper.Viper, error) {
 
 	// Set defaults based on other configs
 	setDefaults(v)
+
+	log.SetLevel(v.GetString(ConfigLogLevel))
 
 	log.Debug(ctx, "config values loaded", "values", v.AllSettings())
 	return v, nil
@@ -173,6 +180,7 @@ func buildFlags() *pflag.FlagSet {
 	flags.String(ConfigGAERemoteAPI, "", "Remoteapi endpoint for App Engine Search. Defaults to serviceproxy-dot-${project}.appspot.com.")
 	flags.Float64(ConfigTraceSamplerFraction, 0.1, "Fraction of the requests sampled by the trace API.")
 	flags.Float64(ConfigTraceSamplerMaxQPS, 5, "Max number of requests sampled every second by the trace API.")
+	flags.String(ConfigLogLevel, "info", "Determine which level of logs to print. (debug, info, warn, error, crit)")
 
 	return flags
 }
