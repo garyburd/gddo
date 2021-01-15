@@ -83,7 +83,7 @@
         {{with .AllExamples}}
           <h4 id="pkg-examples">Examples <a class="permalink" href="#pkg-examples">&para;</a></h4>
           <ul class="list-unstyled">
-            {{range . }}<li><a href="#example-{{.ID}}" onclick="$('#ex-{{.ID}}').addClass('in').removeClass('collapse').height('auto')">{{.Label}}</a></li>{{end}}
+            {{range . }}<li><a href="#example-{{.ID}}" onclick="$('#ex-{{.ID}}').collapse('show')">{{.Label}}</a></li>{{end}}
           </ul>
         {{else}}
           <span id="pkg-examples"></span>
