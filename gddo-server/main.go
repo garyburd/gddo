@@ -1133,6 +1133,7 @@ func main() {
 			}
 		}
 	}()
-	http.Handle("/", s)
-	log.Fatal(http.ListenAndServe(s.v.GetString(ConfigBindAddress), s))
+	ss := httputil.HSTS(s)
+	http.Handle("/", ss)
+	log.Fatal(http.ListenAndServe(s.v.GetString(ConfigBindAddress), ss))
 }
